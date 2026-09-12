@@ -109,11 +109,11 @@ jobs:
 
       - name: Lint
         run: |
-          npx ng lint
+          npm run lint
 
       - name: Unit tests
         run: |
-          npx ng test --coverage
+          npm run test -- --coverage
 
       - name: Upload coverage artifact
         if: always()
