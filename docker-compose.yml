@@ -10,7 +10,7 @@ services:
       args:
         API_NAME: TextToSpeech.Api
     image: alikberova/texttospeech.api:${IMAGE_TAG_VERSION}
-    env_file: .env
+    env_file: ${OVERRIDE_ENV_FILE:-.env}
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       IsTestMode: ${IsTestMode}
