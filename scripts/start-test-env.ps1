@@ -13,6 +13,7 @@ try {
 
     Push-Location $repoRoot
 
+    docker network create elk 2>$null
     docker compose --env-file $tempEnvFile up --build
 }
 finally {
