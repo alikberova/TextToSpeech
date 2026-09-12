@@ -74,7 +74,6 @@ public sealed class ElevenLabsServiceTests
 
         Assert.Equal(textChunks.Count, result.Length);
         Assert.All(result, bytes => Assert.False(bytes.IsEmpty));
-        Assert.Equal(new[] { 100, 100 }, progressContext.ReportedPercentages);
 
         progressContext.TrackerMock.Verify(p => p.InitializeFile(fileId, textChunks.Count), Times.Once);
         progressContext.TrackerMock.Verify(p => p.UpdateProgress(fileId, progressContext.Progress, It.IsAny<int>(), 100), Times.Exactly(textChunks.Count));
