@@ -28,19 +28,35 @@ public sealed class TtsFormPage
     private IWebElement? SamplePlayButton => _driver.FindElement(By.CssSelector($"button[data-testid='{DataTestId.SamplePlayButton}']"));
     private IWebElement SubmitButton => _driver.FindElement(By.CssSelector($"button[data-testid='{DataTestId.SubmitBtn}']"));
     private IWebElement DownloadButton => _wait.UntilVisibleAndEnabled(DownloadButtonBy);
-    private IWebElement? CancelProcessingButton => _wait.UntilVisibleAndEnabled(
-        By.CssSelector(Selectors.ProgressCancelButton));
-
     public bool IsProgressPanelVisible() => _driver.FindElements(By.CssSelector(Selectors.ProgressPanel)).Count != 0;
+
+    public void ClickCancelWhenReady()
+    {
+        _wait.Until(driver =>
+        {
+            try
+            {
+                var cancelButton = driver.FindElements(By.CssSelector(Selectors.ProgressCancelButton))
+                    .FirstOrDefault(element => element.Displayed && element.Enabled);
+
+                if (cancelButton is null)
+                {
+                    return false;
+                }
+
+                cancelButton.Click();
+                return true;
+            }
+            catch (ElementClickInterceptedException)
+            {
+                return false;
+            }
+        });
+    }
 
     public bool IsIconVisible(string icon)
     {
         return _wait.Until(_ => SamplePlayButton?.Text.Trim() == icon);
-    }
-
-    public void ClickCancel()
-    {
-        CancelProcessingButton!.Click();
     }
 
     public string? WaitStatusIconText(string status)
@@ -102,7 +118,21 @@ public sealed class TtsFormPage
 
     public void ClickSubmit() => SubmitButton.Click();
     public void ClickDownload() => DownloadButton.Click();
-    public void ClickPlayButton() => SamplePlayButton!.Click();
+    public void ClickPlayButton()
+    {
+        _wait.Until(_ =>
+        {
+            try
+            {
+                SamplePlayButton!.Click();
+                return true;
+            }
+            catch (ElementClickInterceptedException)
+            {
+                return false;
+            }
+        });
+    }
 
     public void RemoveUploadedFile()
     {

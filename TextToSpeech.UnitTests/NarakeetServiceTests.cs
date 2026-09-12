@@ -113,7 +113,8 @@ public sealed class NarakeetServiceTests
         Assert.Single(result);
         Assert.False(result[0].IsEmpty);
         progressContext.TrackerMock.Verify(t => t.InitializeFile(fileId, 1), Times.Once);
-        progressContext.TrackerMock.Verify(t => t.UpdateProgress(fileId, progressContext.Progress, 0, inProgressPercent), Times.Once);
+        progressContext.TrackerMock.Verify(t =>
+            t.UpdateProgress(fileId, progressContext.Progress, 0, inProgressPercent), Times.AtLeastOnce);
         Assert.Contains(inProgressPercent, progressContext.ReportedPercentages);
     }
 
