@@ -10,7 +10,7 @@ services:
       args:
         API_NAME: TextToSpeech.Api
     image: alikberova/texttospeech.api:${IMAGE_TAG_VERSION}
-    env_file: .env
+    env_file: ${OVERRIDE_ENV_FILE:-.env}
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       IsTestMode: ${IsTestMode}
@@ -61,7 +61,7 @@ services:
     image: postgres:18-alpine
     container_name: db
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
