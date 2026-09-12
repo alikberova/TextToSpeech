@@ -2,10 +2,15 @@
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $certDir = Join-Path $repoRoot "TextToSpeech.Web\nginx\certs"
-$openssl = "C:\Program Files\Git\usr\bin\openssl.exe"
 
-if (-not (Test-Path $openssl)) {
-    throw "OpenSSL was not found at: $openssl"
+$openssl = if ($IsWindows) {
+    "C:\Program Files\Git\usr\bin\openssl.exe"
+} else {
+    "openssl"
+}
+
+if (-not (Get-Command $openssl -ErrorAction SilentlyContinue)) {
+    throw "OpenSSL was not found."
 }
 
 New-Item -ItemType Directory -Force -Path $certDir | Out-Null

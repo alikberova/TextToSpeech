@@ -46,12 +46,7 @@ jobs:
 
       - name: Generate test SSL certs
         if: matrix.test_type == 'Selenium'
-        run: |
-          openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-            -subj "/CN=localhost" \
-            -addext "subjectAltName=DNS:localhost" \
-            -keyout $CERTS_PATH/privkey.pem \
-            -out $CERTS_PATH/fullchain.pem
+        run: pwsh ./scripts/generate-cert.ps1
 
       - name: Log in to Docker Hub
         if: matrix.test_type == 'Selenium'
