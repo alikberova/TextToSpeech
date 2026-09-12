@@ -4,6 +4,7 @@ using TextToSpeech.Infra.Constants;
 using TextToSpeech.SeleniumTests.Pages;
 using Xunit.Abstractions;
 using static TextToSpeech.Infra.TestData;
+using static TextToSpeech.SeleniumTests.Constants.UiConstants;
 
 namespace TextToSpeech.SeleniumTests.Tests;
 
@@ -82,12 +83,9 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
 
         Assert.True(page.IsProgressPanelVisible());
 
-        // when running all selenium tests, it needs timeout to pass for some reason
-        await Task.Delay(1250);
-        page.ClickCancel();
+        page.ClickCancelWhenReady();
 
-        const string cancelIcon = "cancel";
-        Assert.Equal(cancelIcon, page.WaitStatusIconText(cancelIcon));
+        Assert.Equal(StatusIcons.Canceled, page.WaitStatusIconText(StatusIcons.Canceled));
     }
 
     private static async Task WriteBigFileText(string filePath, string content, int repetitions)

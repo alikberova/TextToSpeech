@@ -63,11 +63,11 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
         _backgroundTaskQueue.QueueBackgroundWorkItem(async token =>
         {
-            token = cts.Token;
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token);
             using var scope = _serviceScopeFactory.CreateScope();
             var speechService = scope.ServiceProvider.GetRequiredService<ISpeechService>();
             await speechService.ProcessSpeechAsync(request, fileText, fileName, ttsApi,
-                audioFileId.Value, ownerId, token);
+                audioFileId.Value, ownerId, linkedCts.Token);
         });
 
         _logger.LogInformation("Initializing TTS for {AudioFileId}", audioFileId);

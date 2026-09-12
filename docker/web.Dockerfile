@@ -1,8 +1,8 @@
-FROM node:25.6.1-alpine AS build
+FROM node:24-alpine AS build
 
 WORKDIR /src
 COPY package*.json /src/
-RUN npm install
+RUN npm ci
 
 # Copy the rest of the source code
 COPY . /src

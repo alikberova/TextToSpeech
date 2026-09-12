@@ -58,14 +58,20 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         var hubConnection = BuildHubConnection(_client, _factory, token);
 
         var spechStatusUpdated = new TaskCompletionSource<bool>();
+        var expectedFileId = new TaskCompletionSource<Guid>();
 
         var status = string.Empty;
         string? errorMessage = null;
         Guid? fileId = null;
         var progressReports = new List<int?>();
 
-        hubConnection.On<Guid, string, int?, string?>(Shared.AudioStatusUpdated, (fileIdResult, updatedStatus, progressPercentage, errorMessageResult) =>
+        hubConnection.On<Guid, string, int?, string?>(Shared.AudioStatusUpdated, async (fileIdResult, updatedStatus, progressPercentage, errorMessageResult) =>
         {
+            if (fileIdResult != await expectedFileId.Task)
+            {
+                return;
+            }
+
             status = updatedStatus;
             errorMessage = errorMessageResult;
             fileId = fileIdResult;
@@ -89,18 +95,19 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         var response = await _client.PostAsync("/api/speech", GetFormData(ttsApi));
         response.EnsureSuccessStatusCode();
         var responseString = await response.Content.ReadAsStringAsync();
+        Assert.True(Guid.TryParse(responseString.Trim('"'), out var respStringFileId), "Response string file ID is not a valid guid");
+        expectedFileId.SetResult(respStringFileId);
 
-        var completedTask = await Task.WhenAny(spechStatusUpdated.Task, Task.Delay(TimeSpan.FromSeconds(10)));
+        var completedTask = await Task.WhenAny(spechStatusUpdated.Task, Task.Delay(TimeSpan.FromSeconds(20)));
+        Assert.True(completedTask == spechStatusUpdated.Task, "Timed out to update speech status");
 
-        var downloadResp = await _client.GetAsync($"/api/audio/download/{fileId}");
+        var downloadResp = await _client.GetAsync($"/api/audio/download/{respStringFileId}");
         downloadResp.EnsureSuccessStatusCode();
         var downloadBytes = await downloadResp.Content.ReadAsByteArrayAsync();
 
         //Assert 
 
-        Assert.True(completedTask == spechStatusUpdated.Task, "Timed out to update speech status");
         Assert.Equal(Status.Completed.ToString(), status);
-        Assert.True(Guid.TryParse(responseString.Trim('"'), out var respStringFileId), "Response string file ID is not a valid guid");
         Assert.Equal(respStringFileId, fileId);
         Assert.Null(errorMessage);
         Assert.NotEmpty(progressReports);
