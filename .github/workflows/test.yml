@@ -38,7 +38,7 @@ jobs:
           cat .env.test >> .env
 
       - name: Export environment variables from an env file
-        uses: falti/dotenv-action@v1.1
+        uses: falti/dotenv-action@v1.2
         with:
           export-variables: true
           keys-case: bypass
@@ -46,12 +46,7 @@ jobs:
 
       - name: Generate test SSL certs
         if: matrix.test_type == 'Selenium'
-        run: |
-          openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-            -subj "/CN=localhost" \
-            -addext "subjectAltName=DNS:localhost" \
-            -keyout $CERTS_PATH/privkey.pem \
-            -out $CERTS_PATH/fullchain.pem
+        run: pwsh ./scripts/generate-cert.ps1
 
       - name: Log in to Docker Hub
         if: matrix.test_type == 'Selenium'
@@ -70,7 +65,7 @@ jobs:
           docker compose up -d
 
       - name: Cache NuGet Packages
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
@@ -103,7 +98,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: npm
@@ -114,11 +109,11 @@ jobs:
 
       - name: Lint
         run: |
-          npx ng lint
+          npm run lint
 
       - name: Unit tests
         run: |
-          npx ng test --coverage
+          npm run test -- --coverage
 
       - name: Upload coverage artifact
         if: always()
