@@ -106,6 +106,8 @@ export class HomePage implements OnInit, OnDestroy {
   errorMessage = signal<string | undefined>(undefined);
 
   // 5) Derived computed values
+  readonly canCancel = computed(() => this.currentFileId() !== null);
+
   readonly languages = computed<readonly LangSelectOption[]>(() => {
     this.langChangeTrigger();
     if (this.provider() !== NARAKEET_KEY) {

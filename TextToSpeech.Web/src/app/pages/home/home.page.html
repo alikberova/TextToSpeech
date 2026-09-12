@@ -245,7 +245,7 @@
           }
         </div>
         @if (status() === 'Processing' || status() === 'Created') {
-          <button type="button" mat-stroked-button color="primary" class="cancel-btn" (click)="cancel()">
+          <button type="button" mat-stroked-button color="primary" class="cancel-btn" (click)="cancel()" [disabled]="!canCancel()">
             {{ 'home.actions.cancel' | translate }}
           </button>
         }

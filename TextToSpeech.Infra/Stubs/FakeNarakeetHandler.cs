@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Concurrent;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using TextToSpeech.Core.Models;
@@ -10,43 +11,27 @@ namespace TextToSpeech.Infra.Stubs;
 
 public sealed class FakeNarakeetHandler : HttpMessageHandler
 {
+    private const int InProgressStatusCallCount = 5;
+    private const string StatusPathPrefix = "/status/";
+    private const string ResultPathPrefix = "/result/";
+
     public Uri BaseAddress { get; } = new("https://fake.narakeet.local/");
     public const int BuildTaskStatusPercentInProgress = 42;
 
-    private readonly BuildTask _buildTask;
     private readonly BuildTaskStatus _inProgress;
-    private readonly BuildTaskStatus _finished;
     private readonly byte[] _audioBytes;
 
     private readonly List<NarakeetVoiceResult> _voices;
-
-    private int _statusCalls;
+    private readonly ConcurrentDictionary<string, int> _statusCallsByTaskId = new();
 
     public FakeNarakeetHandler()
     {
-        var taskId = Guid.NewGuid().ToString("N");
-
-        _buildTask = new BuildTask
-        {
-            TaskId = taskId,
-            RequestId = $"req-{taskId}",
-            StatusUrl = $"{BaseAddress}status/{taskId}"
-        };
-
         _inProgress = new BuildTaskStatus
         {
             Finished = false,
             Succeeded = false,
             Percent = BuildTaskStatusPercentInProgress,
             Message = "processing"
-        };
-
-        _finished = new BuildTaskStatus
-        {
-            Finished = true,
-            Succeeded = true,
-            Percent = 100,
-            Result = $"{BaseAddress}result/{taskId}"
         };
 
         _audioBytes = AudioFileService.GenerateSilentMp3(2);
@@ -62,8 +47,6 @@ public sealed class FakeNarakeetHandler : HttpMessageHandler
     {
         var uri = request.RequestUri;
         var path = uri?.AbsolutePath ?? "";
-        var url = uri?.ToString() ?? "";
-
         if (request.Method == HttpMethod.Get &&
             string.Equals(path.TrimEnd('/'), "/voices", StringComparison.OrdinalIgnoreCase))
         {
@@ -75,23 +58,51 @@ public sealed class FakeNarakeetHandler : HttpMessageHandler
         if (request.Method == HttpMethod.Post)
         {
             await Delay.RandomShort(cancellationToken);
-            return Json(HttpStatusCode.OK, _buildTask);
+
+            var taskId = Guid.NewGuid().ToString("N");
+            var buildTask = new BuildTask
+            {
+                TaskId = taskId,
+                RequestId = $"req-{taskId}",
+                StatusUrl = new Uri(BaseAddress, $"{StatusPathPrefix}{taskId}").ToString()
+            };
+
+            _statusCallsByTaskId[taskId] = 0;
+
+            return Json(HttpStatusCode.OK, buildTask);
         }
 
-        // GET status → in progress once, then finished
+        // GET status → in progress for several polls, then finished
+        var statusTaskId = GetTaskId(path, StatusPathPrefix);
         if (request.Method == HttpMethod.Get &&
-            string.Equals(url, _buildTask.StatusUrl, StringComparison.Ordinal))
+            statusTaskId is not null &&
+            _statusCallsByTaskId.ContainsKey(statusTaskId))
         {
             await Delay.RandomShort(cancellationToken);
 
-            _statusCalls++;
-            return Json(HttpStatusCode.OK,
-                _statusCalls == 1 ? _inProgress : _finished);
+            var statusCalls = _statusCallsByTaskId.AddOrUpdate(
+                statusTaskId,
+                1,
+                (_, currentStatusCalls) => currentStatusCalls + 1);
+            if (statusCalls <= InProgressStatusCallCount)
+            {
+                return Json(HttpStatusCode.OK, _inProgress);
+            }
+
+            return Json(HttpStatusCode.OK, new BuildTaskStatus
+            {
+                Finished = true,
+                Succeeded = true,
+                Percent = 100,
+                Result = new Uri(BaseAddress, $"{ResultPathPrefix}{statusTaskId}").ToString()
+            });
         }
 
         // GET result → audio bytes
+        var resultTaskId = GetTaskId(path, ResultPathPrefix);
         if (request.Method == HttpMethod.Get &&
-            string.Equals(url, _finished.Result, StringComparison.Ordinal))
+            resultTaskId is not null &&
+            _statusCallsByTaskId.ContainsKey(resultTaskId))
         {
             await Delay.RandomShort(cancellationToken);
 
@@ -102,6 +113,16 @@ public sealed class FakeNarakeetHandler : HttpMessageHandler
         }
 
         return new HttpResponseMessage(HttpStatusCode.NotFound);
+    }
+
+    private static string? GetTaskId(string path, string pathPrefix)
+    {
+        if (!path.StartsWith(pathPrefix, StringComparison.Ordinal) || path.Length == pathPrefix.Length)
+        {
+            return null;
+        }
+
+        return path[pathPrefix.Length..];
     }
 
     private static NarakeetVoiceResult FromVoice(Voice voice)

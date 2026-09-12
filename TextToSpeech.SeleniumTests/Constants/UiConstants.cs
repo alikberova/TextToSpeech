@@ -31,6 +31,11 @@ internal static class UiConstants
         public const string StatusIcon = ".progress-panel .status-icon";
     }
 
+    internal static class StatusIcons
+    {
+        public const string Canceled = "cancel";
+    }
+
     internal static class Ids
     {
         public const string FileInput = "fileInputEl";
