@@ -40,7 +40,7 @@ describe('HomePage - Validation UX', () => {
     });
 
     it('shows no errors on initial load', async () => {
-        expect(getMatErrors(fixture).length).toBe(0);
+        expect(getMatErrors(fixture)).toHaveLength(0);
         expect(fixture.debugElement.query(By.css(FORM_ERROR_SELECTOR))).toBeNull();
     });
 
@@ -50,7 +50,7 @@ describe('HomePage - Validation UX', () => {
             .find((m: NgModel) => m.name === 'provider') as NgModel;
         providerNgModel.control.markAsTouched();
         fixture.detectChanges();
-        expect(getMatErrors(fixture).length).toBe(1);
+        expect(getMatErrors(fixture)).toHaveLength(1);
     });
 
     it('after a failed submit, invalid fields display errors and form-level error appears', async () => {

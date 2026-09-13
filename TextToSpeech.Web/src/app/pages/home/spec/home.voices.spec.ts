@@ -9,7 +9,7 @@ describe('HomePage - Voice dropdown behavior', () => {
     const voiceSelect = fixture.nativeElement.querySelector(SELECTOR_VOICE_SELECT);
     expect(voiceSelect.getAttribute(ATTR_ARIA_DISABLED)).toBe('true');
     // No provider -> voicesForProvider empty
-    expect(component.voicesForProvider().length).toBe(0);
+    expect(component.voicesForProvider()).toHaveLength(0);
 
     // Select provider OpenAI -> enabled and options available
     const providerWithModel = providerKeyWithModel();
