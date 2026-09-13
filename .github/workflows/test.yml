@@ -76,6 +76,7 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      # Ensure restore did not change committed NuGet lock files.
       - name: Verify NuGet lock files
         if: matrix.test_type == 'Unit'
         run: git diff --exit-code -- '**/packages.lock.json'
