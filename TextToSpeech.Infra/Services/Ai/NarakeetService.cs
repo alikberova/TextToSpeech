@@ -11,7 +11,8 @@ using TextToSpeech.Infra.Dto.Narakeet;
 namespace TextToSpeech.Infra.Services.Ai;
 
 /// <summary>
-/// <br/> The Narakeet API allows processing documents up to 100 KB for the long content (polling) API, and 1 KB for the streaming API.
+/// <br/> The Narakeet API allows processing documents up to 100 KB for the long content (polling) API,
+/// and 1 KB for the streaming API.
 /// <br/> By default, the API allows to make 86,400 requests per day (1 per second)
 /// </summary>
 public sealed class NarakeetService : ITtsService
@@ -35,7 +36,8 @@ public sealed class NarakeetService : ITtsService
     /// <param name="voice"></param>
     /// <param name="speed">value between 0.3 and 2 or fast, normal, slow</param>
     /// <returns></returns>
-    public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
+    public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(
+        List<string> textChunks,
         Guid fileId,
         TtsRequestOptions ttsRequest,
         IProgress<ProgressReport> progressCallback,
@@ -46,14 +48,21 @@ public sealed class NarakeetService : ITtsService
         _progressTracker.InitializeFile(fileId, textChunks.Count);
 
         var tasks = textChunks
-            .Select((chunk, index) => RequestLongContent(chunk, fileId, ttsRequest, index, textChunks.Count, progressCallback,
+            .Select((chunk, index) => RequestLongContent(
+                chunk,
+                fileId,
+                ttsRequest,
+                index,
+                textChunks.Count,
+                progressCallback,
                 cancellationToken))
             .ToList();
 
         return await Task.WhenAll(tasks);
     }
 
-    public async Task<ReadOnlyMemory<byte>> RequestSpeechSample(string text,
+    public async Task<ReadOnlyMemory<byte>> RequestSpeechSample(
+        string text,
         TtsRequestOptions ttsRequest,
         CancellationToken cancellationToken = default)
     {
@@ -78,7 +87,9 @@ public sealed class NarakeetService : ITtsService
         return mapped;
     }
 
-    private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, Guid fileId,
+    private async Task<ReadOnlyMemory<byte>> RequestLongContent(
+        string text,
+        Guid fileId,
         TtsRequestOptions ttsRequest,
         int chunkIndex,
         int totalChunks,
@@ -89,7 +100,13 @@ public sealed class NarakeetService : ITtsService
 
         var buildTask = await RequestAudioTaskAsync(text, ttsRequest, cancellationToken);
 
-        var taskResult = await PollUntilFinishedAsync(buildTask, fileId, chunkIndex, totalChunks, progressCallback, cancellationToken);
+        var taskResult = await PollUntilFinishedAsync(
+            buildTask,
+            fileId,
+            chunkIndex,
+            totalChunks,
+            progressCallback,
+            cancellationToken);
 
         if (!taskResult.Succeeded)
         {
@@ -103,13 +120,17 @@ public sealed class NarakeetService : ITtsService
         return new ReadOnlyMemory<byte>(await response.Content.ReadAsByteArrayAsync(cancellationToken));
     }
 
-    private async Task<BuildTask> RequestAudioTaskAsync(string text, TtsRequestOptions ttsRequest, CancellationToken cancellationToken)
+    private async Task<BuildTask> RequestAudioTaskAsync(
+        string text,
+        TtsRequestOptions ttsRequest,
+        CancellationToken cancellationToken)
     {
         StringContent requestBody = new(text, Encoding.UTF8, "text/plain");
 
         using HttpResponseMessage response = await _httpClient.PostAsync(
             GetEndpoint(ttsRequest.ResponseFormat.ToString(), ttsRequest.Voice.ProviderVoiceId, ttsRequest.Speed),
-            requestBody, cancellationToken);
+            requestBody,
+            cancellationToken);
 
         await EnsureSuccessStatusCode(response);
 
@@ -125,7 +146,8 @@ public sealed class NarakeetService : ITtsService
         return result;
     }
 
-    private async Task<BuildTaskStatus> PollUntilFinishedAsync(BuildTask buildTask,
+    private async Task<BuildTaskStatus> PollUntilFinishedAsync(
+        BuildTask buildTask,
         Guid fileId,
         int chunkIndex,
         int totalChunks,
@@ -142,7 +164,8 @@ public sealed class NarakeetService : ITtsService
             var buildTaskStatus = JsonSerializer.Deserialize<BuildTaskStatus>(responseContent);
 
             if (buildTaskStatus is null ||
-                (string.IsNullOrWhiteSpace(buildTaskStatus.Result) && string.IsNullOrWhiteSpace(buildTaskStatus.Message)))
+                (string.IsNullOrWhiteSpace(buildTaskStatus.Result) &&
+                    string.IsNullOrWhiteSpace(buildTaskStatus.Message)))
             {
                 throw new Exception($"{nameof(BuildTaskStatus)} was not deserialized");
             }
@@ -152,10 +175,18 @@ public sealed class NarakeetService : ITtsService
                 return buildTaskStatus;
             }
 
-            var progress = _progressTracker.UpdateProgress(fileId, progressCallback, chunkIndex, buildTaskStatus.Percent);
+            var progress = _progressTracker.UpdateProgress(
+                fileId,
+                progressCallback,
+                chunkIndex,
+                buildTaskStatus.Percent);
 
-            _logger.LogInformation("Processed chunk {ChunkIndex}/{TotalChunks} for file {FileId}. Progress: {Progress}%",
-                chunkIndex + 1, totalChunks, fileId, progress);
+            _logger.LogInformation(
+                "Processed chunk {ChunkIndex}/{TotalChunks} for file {FileId}. Progress: {Progress}%",
+                chunkIndex + 1,
+                totalChunks,
+                fileId,
+                progress);
 
             await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
         }
@@ -169,7 +200,8 @@ public sealed class NarakeetService : ITtsService
         _httpClient.DefaultRequestHeaders.Add("accept", "application/octet-stream");
 
         using HttpResponseMessage response = await _httpClient.PostAsync(
-            GetEndpoint(ttsRequest.ResponseFormat.ToString(), ttsRequest.Voice.ProviderVoiceId, ttsRequest.Speed), requestBody);
+            GetEndpoint(ttsRequest.ResponseFormat.ToString(), ttsRequest.Voice.ProviderVoiceId, ttsRequest.Speed),
+            requestBody);
 
         await EnsureSuccessStatusCode(response);
 
