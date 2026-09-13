@@ -74,7 +74,7 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
         page.SelectProvider(Shared.Narakeet.Name);
         page.SelectLanguage(Lang.GermanStandard);
         await page.SelectVoice(NarakeetVoices.Hans.Name);
-        
+
         page.UploadFile(path1);
         page.RemoveUploadedFile();
 

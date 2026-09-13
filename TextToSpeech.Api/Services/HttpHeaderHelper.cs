@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Api.Services;
+namespace TextToSpeech.Api.Services;
 
 internal static class HttpHeaderHelper
 {

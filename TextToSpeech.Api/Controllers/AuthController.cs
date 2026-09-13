@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using TextToSpeech.Api.Services;
 
 namespace TextToSpeech.Api.Controllers;
@@ -12,8 +12,7 @@ public sealed class AuthController(IJwtTokenService jwtTokenService) : Controlle
     {
         (var expires, var jwtString) = jwtTokenService.CreateGuestToken();
 
-        return Ok(new
-        {
+        return Ok(new {
             accessToken = jwtString,
             expiresAtUtc = expires
         });

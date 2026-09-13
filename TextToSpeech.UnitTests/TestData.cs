@@ -1,4 +1,4 @@
-﻿using TextToSpeech.Core.Models;
+using TextToSpeech.Core.Models;
 
 namespace TextToSpeech.UnitTests;
 
@@ -8,10 +8,8 @@ internal static class TestData
     public const string CheckThatSentenceIsNotSplitByQuestionMark_Text1500chars = "? - she asks";
 
     public static TtsRequestOptions TtsRequestOptions =>
-        new()
-        {
-            Voice = new Voice
-            {
+        new() {
+            Voice = new Voice {
                 Name = "Any",
                 ProviderVoiceId = "any"
             },

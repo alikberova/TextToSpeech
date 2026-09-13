@@ -1,4 +1,4 @@
-﻿using TextToSpeech.Core.Entities;
+using TextToSpeech.Core.Entities;
 
 namespace TextToSpeech.Core.Interfaces.Repositories;
 

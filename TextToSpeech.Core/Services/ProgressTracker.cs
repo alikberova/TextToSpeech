@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Models;
 

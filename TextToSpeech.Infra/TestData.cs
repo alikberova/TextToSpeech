@@ -1,4 +1,4 @@
-﻿using TextToSpeech.Core.Entities;
+using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Services;
@@ -25,8 +25,7 @@ public static class TestData
         var audio = AudioFileBuilder.Create(AudioFileService.GenerateSilentMp3(5),
             AudioType.Sample,
             TtsSampleRequest,
-            new TtsRequestOptions()
-            {
+            new TtsRequestOptions() {
                 Voice = new Voice() { Name = OpenAiVoices.Alloy.Name, ProviderVoiceId = OpenAiVoices.Alloy.ProviderVoiceId },
                 Model = "tts-1",
                 Speed = 1,
@@ -47,8 +46,7 @@ public static class TestData
         var audio = AudioFileBuilder.Create(AudioFileService.GenerateSilentMp3(3),
             AudioType.Full,
             TtsFullRequest,
-            new TtsRequestOptions()
-            {
+            new TtsRequestOptions() {
                 Voice = new Voice() { Name = OpenAiVoices.Fable.Name, ProviderVoiceId = OpenAiVoices.Fable.ProviderVoiceId },
                 Model = "tts-1",
                 Speed = 1,
@@ -68,14 +66,12 @@ public static class TestData
     {
         public static Voice[] All => [Alloy, Fable];
 
-        public static Voice Alloy => new()
-        {
+        public static Voice Alloy => new() {
             Name = "Alloy",
             ProviderVoiceId = "alloy",
         };
 
-        public static Voice Fable => new()
-        {
+        public static Voice Fable => new() {
             Name = "Fable",
             ProviderVoiceId = "fable",
         };
@@ -85,29 +81,25 @@ public static class TestData
     {
         public static Voice[] All => [Hans, Armin, Amanda, Anders];
 
-        public static Voice Hans => new()
-        {
+        public static Voice Hans => new() {
             Name = "Hans",
             ProviderVoiceId = "hans",
             Language = new Language(Lang.GermanStandard, "de-DE"),
         };
 
-        public static Voice Armin => new()
-        {
+        public static Voice Armin => new() {
             Name = "Armin",
             ProviderVoiceId = "armin",
             Language = new Language(Lang.GermanStandard, "de-DE"),
         };
 
-        public static Voice Amanda => new()
-        {
+        public static Voice Amanda => new() {
             Name = "Amanda",
             ProviderVoiceId = "amanda",
             Language = new Language(Lang.English, "en-US"),
         };
 
-        public static Voice Anders => new()
-        {
+        public static Voice Anders => new() {
             Name = "Anders",
             ProviderVoiceId = "anders",
             Language = new Language("Danish", "da-DK"),
@@ -118,14 +110,12 @@ public static class TestData
     {
         public static Voice[] All => [Roger, Sarah];
 
-        public static Voice Roger => new()
-        {
+        public static Voice Roger => new() {
             Name = "Roger",
             ProviderVoiceId = "CwhRBWXzGAHq8TQ4Fs17",
         };
 
-        public static Voice Sarah => new()
-        {
+        public static Voice Sarah => new() {
             Name = "Sarah",
             ProviderVoiceId = "EXAVITQu4vr4xnSDxMaL",
         };

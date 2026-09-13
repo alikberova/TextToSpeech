@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Infra.Stubs;
+namespace TextToSpeech.Infra.Stubs;
 
 internal static class Delay
 {

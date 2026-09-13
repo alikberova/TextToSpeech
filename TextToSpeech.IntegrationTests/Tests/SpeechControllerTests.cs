@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Globalization;
 using System.Net.Http.Headers;
@@ -139,8 +139,7 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         var voice = speechRequest.TtsRequestOptions.Voice;
 
         var fileContent = new StreamContent(speechRequest.File!.OpenReadStream());
-        fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-        {
+        fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data") {
             Name = nameof(speechRequest.File),
             FileName = speechRequest.File.FileName
         };

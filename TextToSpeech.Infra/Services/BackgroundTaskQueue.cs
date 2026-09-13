@@ -1,4 +1,4 @@
-﻿using System.Threading.Channels;
+using System.Threading.Channels;
 using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.Infra.Services;
@@ -9,8 +9,7 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
 
     public BackgroundTaskQueue(int capacity = 100)
     {
-        var options = new BoundedChannelOptions(capacity)
-        {
+        var options = new BoundedChannelOptions(capacity) {
             FullMode = BoundedChannelFullMode.Wait
         };
 

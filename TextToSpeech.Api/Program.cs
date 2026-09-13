@@ -59,8 +59,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
                         ?? string.Empty)
                 .ToArray());
 
-        var details = new ValidationProblemDetails(errorDict)
-        {
+        var details = new ValidationProblemDetails(errorDict) {
             Status = StatusCodes.Status400BadRequest,
             Type = "https://httpstatuses.com/400",
             Title = "One or more validation errors occurred.",
@@ -155,8 +154,7 @@ static void AddAuthentication(WebApplicationBuilder builder)
         .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
+            options.TokenValidationParameters = new TokenValidationParameters {
                 ValidateIssuer = true,
                 ValidIssuer = jwt.Issuer,
 

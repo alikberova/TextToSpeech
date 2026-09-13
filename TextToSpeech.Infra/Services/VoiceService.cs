@@ -1,4 +1,4 @@
-﻿using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Constants;

@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Infra.Constants;
+namespace TextToSpeech.Infra.Constants;
 
 public static class CacheKeys
 {

@@ -1,4 +1,4 @@
-﻿using EpubSharp;
+using EpubSharp;
 using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services.FileProcessing;

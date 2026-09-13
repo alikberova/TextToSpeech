@@ -1,4 +1,4 @@
-﻿using OpenAI;
+using OpenAI;
 using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Net;
@@ -12,14 +12,12 @@ public static class FakeOpenAIClient
     {
         var handler = new FakeOpenAiHttpHandler();
 
-        var httpClient = new HttpClient(handler)
-        {
+        var httpClient = new HttpClient(handler) {
             BaseAddress = new Uri("https://fake.openai.local/")
         };
 
         return new OpenAIClient(new ApiKeyCredential("test-key"),
-            new OpenAIClientOptions
-            {
+            new OpenAIClientOptions {
                 Endpoint = httpClient.BaseAddress,
                 Transport = new HttpClientPipelineTransport(httpClient)
             });
@@ -34,8 +32,7 @@ sealed class FakeOpenAiHttpHandler : HttpMessageHandler
         {
             await Delay.RandomMedium(cancellationToken);
 
-            var resp = new HttpResponseMessage(HttpStatusCode.OK)
-            {
+            var resp = new HttpResponseMessage(HttpStatusCode.OK) {
                 Content = new ByteArrayContent(AudioFileService.GenerateSilentMp3(2))
             };
 

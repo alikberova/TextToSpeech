@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using TextToSpeech.Core;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Infra.Config;

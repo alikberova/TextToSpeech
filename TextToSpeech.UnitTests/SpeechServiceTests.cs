@@ -24,8 +24,7 @@ public sealed class SpeechServiceTests
 
     private static readonly Guid AudioFileId = Guid.NewGuid();
     private static readonly byte[] FileBytes = [1, 2, 3];
-    private static readonly TtsRequestOptions Request = new()
-    {
+    private static readonly TtsRequestOptions Request = new() {
         Model = "m1",
         Speed = 1,
         ResponseFormat = SpeechResponseFormat.Mp3,

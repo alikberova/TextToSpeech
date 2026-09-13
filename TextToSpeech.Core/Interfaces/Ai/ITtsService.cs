@@ -1,4 +1,4 @@
-﻿using TextToSpeech.Core.Models;
+using TextToSpeech.Core.Models;
 
 namespace TextToSpeech.Core.Interfaces.Ai;
 

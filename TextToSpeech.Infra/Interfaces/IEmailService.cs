@@ -1,4 +1,4 @@
-﻿using TextToSpeech.Infra.Dto;
+using TextToSpeech.Infra.Dto;
 
 namespace TextToSpeech.Infra.Interfaces;
 

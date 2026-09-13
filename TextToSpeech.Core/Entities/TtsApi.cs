@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Core.Entities;
+namespace TextToSpeech.Core.Entities;
 
 public sealed class TtsApi
 {

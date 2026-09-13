@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -26,8 +26,7 @@ public sealed class FakeNarakeetHandler : HttpMessageHandler
 
     public FakeNarakeetHandler()
     {
-        _inProgress = new BuildTaskStatus
-        {
+        _inProgress = new BuildTaskStatus {
             Finished = false,
             Succeeded = false,
             Percent = BuildTaskStatusPercentInProgress,
@@ -60,8 +59,7 @@ public sealed class FakeNarakeetHandler : HttpMessageHandler
             await Delay.RandomShort(cancellationToken);
 
             var taskId = Guid.NewGuid().ToString("N");
-            var buildTask = new BuildTask
-            {
+            var buildTask = new BuildTask {
                 TaskId = taskId,
                 RequestId = $"req-{taskId}",
                 StatusUrl = new Uri(BaseAddress, $"{StatusPathPrefix}{taskId}").ToString()
@@ -89,8 +87,7 @@ public sealed class FakeNarakeetHandler : HttpMessageHandler
                 return Json(HttpStatusCode.OK, _inProgress);
             }
 
-            return Json(HttpStatusCode.OK, new BuildTaskStatus
-            {
+            return Json(HttpStatusCode.OK, new BuildTaskStatus {
                 Finished = true,
                 Succeeded = true,
                 Percent = 100,
@@ -106,8 +103,7 @@ public sealed class FakeNarakeetHandler : HttpMessageHandler
         {
             await Delay.RandomShort(cancellationToken);
 
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
+            return new HttpResponseMessage(HttpStatusCode.OK) {
                 Content = new ByteArrayContent(_audioBytes)
             };
         }
@@ -127,8 +123,7 @@ public sealed class FakeNarakeetHandler : HttpMessageHandler
 
     private static NarakeetVoiceResult FromVoice(Voice voice)
     {
-        return new NarakeetVoiceResult
-        {
+        return new NarakeetVoiceResult {
             Name = voice.ProviderVoiceId,
             Language = voice.Language?.Name ?? string.Empty,
             LanguageCode = voice.Language?.LanguageCode ?? string.Empty,
@@ -137,8 +132,7 @@ public sealed class FakeNarakeetHandler : HttpMessageHandler
     }
 
     private static HttpResponseMessage Json<T>(HttpStatusCode status, T value) =>
-        new(status)
-        {
+        new(status) {
             Content = new StringContent(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json")
         };
 }

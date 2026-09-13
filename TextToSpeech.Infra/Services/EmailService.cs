@@ -1,4 +1,4 @@
-﻿using MailKit.Net.Smtp;
+using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using TextToSpeech.Core;
@@ -26,8 +26,7 @@ public sealed class EmailService : IEmailService
         email.To.Add(new MailboxAddress("Admin", _emailConfig.EmailTo));
 
         email.Subject = AppConstants.AppName;
-        email.Body = new TextPart(MimeKit.Text.TextFormat.Text)
-        {
+        email.Body = new TextPart(MimeKit.Text.TextFormat.Text) {
             Text = $"Message from {request.UserEmail}:\n{request.Message}"
         };
 

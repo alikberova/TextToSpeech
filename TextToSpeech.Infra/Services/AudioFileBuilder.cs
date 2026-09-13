@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Models;
@@ -20,8 +20,7 @@ public static class AudioFileBuilder
     {
         var langCode = options.Voice.Language?.LanguageCode;
 
-        var audio = new AudioFile
-        {
+        var audio = new AudioFile {
             Id = id ?? Guid.NewGuid(),
             FileName = fileName ?? string.Empty,
             CreatedAt = DateTime.UtcNow,

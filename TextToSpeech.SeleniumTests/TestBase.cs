@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
@@ -64,8 +64,7 @@ public class TestBase : IAsyncLifetime
 
     private static WebDriverWait GetWait(IWebDriver driver)
     {
-        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5))
-        {
+        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5)) {
             PollingInterval = TimeSpan.FromMilliseconds(250)
         };
 
@@ -101,8 +100,7 @@ public class TestBase : IAsyncLifetime
         var baseUrl = config["ApiBaseUrl"] ??
             throw new InvalidOperationException("ApiBaseUrl is not set");
 
-        using var client = new HttpClient
-        {
+        using var client = new HttpClient {
             BaseAddress = new Uri(baseUrl)
         };
 

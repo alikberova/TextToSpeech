@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Infra.Config;
+namespace TextToSpeech.Infra.Config;
 
 public sealed class EmailConfig
 {

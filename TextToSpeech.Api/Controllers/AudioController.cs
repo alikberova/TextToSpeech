@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Repositories;

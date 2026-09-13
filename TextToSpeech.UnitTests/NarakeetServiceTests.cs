@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using System.Net;
@@ -126,8 +126,7 @@ public sealed class NarakeetServiceTests
 
         httpHandler.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
+            .ReturnsAsync(new HttpResponseMessage {
                 StatusCode = HttpStatusCode.OK,
                 Content = JsonContent.Create(apiResult)
             });
@@ -139,8 +138,7 @@ public sealed class NarakeetServiceTests
 
     private static NarakeetService CreateService(IProgressTracker progressTracker, HttpMessageHandler httpMessageHandler)
     {
-        var httpClient = new HttpClient(httpMessageHandler)
-        {
+        var httpClient = new HttpClient(httpMessageHandler) {
             BaseAddress = new Uri("https://example.com")
         };
 
@@ -149,5 +147,5 @@ public sealed class NarakeetServiceTests
             Mock.Of<ILogger<NarakeetService>>());
 
         return service;
-    } 
+    }
 }

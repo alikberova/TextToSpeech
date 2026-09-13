@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -13,8 +13,7 @@ namespace TextToSpeech.Infra.Migrations
         {
             migrationBuilder.CreateTable(
                 name: "TtsApis",
-                columns: table => new
-                {
+                columns: table => new {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false)
                 },
@@ -25,8 +24,7 @@ namespace TextToSpeech.Infra.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AudioFiles",
-                columns: table => new
-                {
+                columns: table => new {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     FileName = table.Column<string>(type: "text", nullable: false),
                     Data = table.Column<byte[]>(type: "bytea", nullable: false),

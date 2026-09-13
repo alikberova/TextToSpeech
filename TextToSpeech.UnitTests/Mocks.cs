@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Moq;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Models;

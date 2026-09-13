@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using TextToSpeech.Core.Interfaces;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;

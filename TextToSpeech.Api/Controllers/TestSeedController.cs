@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Api.Controllers;
+namespace TextToSpeech.Api.Controllers;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
