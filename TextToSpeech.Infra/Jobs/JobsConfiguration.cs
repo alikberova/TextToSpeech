@@ -12,6 +12,8 @@ public static class JobsConfiguration
     public static IServiceCollection AddBackgroundJobs(this IServiceCollection services)
     {
         services.AddScoped<ISubmitBackgroundJob, SubmitBackgroundJob>();
+        services.AddScoped<BackgroundJobStore>();
+        services.AddScoped<BackgroundJobStateTransitions>();
         services.AddScoped<IBackgroundJobs, BackgroundJobs>();
 
         return services;

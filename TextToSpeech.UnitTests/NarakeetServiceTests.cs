@@ -69,7 +69,12 @@ public sealed class NarakeetServiceTests
         var (service, handler) = CreateService([], MockBehavior.Strict);
 
         // Act
-        var result = await service.RequestSpeechChunksAsync([], Guid.NewGuid(), TestData.TtsRequestOptions, Mocks.ProgressCallback, default);
+        var result = await service.RequestSpeechChunksAsync(
+            [],
+            Guid.NewGuid(),
+            TestData.TtsRequestOptions,
+            Mocks.ProgressCallback,
+            default);
 
         // Assert
         Assert.Empty(result);
@@ -91,7 +96,12 @@ public sealed class NarakeetServiceTests
 
         // Act / Assert
         await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            service.RequestSpeechChunksAsync(["text"], Guid.NewGuid(), TestData.TtsRequestOptions, Mocks.ProgressCallback, cts.Token));
+            service.RequestSpeechChunksAsync(
+                ["text"],
+                Guid.NewGuid(),
+                TestData.TtsRequestOptions,
+                Mocks.ProgressCallback,
+                cts.Token));
 
         handler.Protected().Verify("SendAsync",
             Times.Never(),
@@ -108,7 +118,12 @@ public sealed class NarakeetServiceTests
 
         NarakeetService service = CreateService(progressContext.TrackerMock.Object, new FakeNarakeetHandler());
 
-        var result = await service.RequestSpeechChunksAsync(["chunk"], fileId, TestData.TtsRequestOptions, progressContext.Progress, default);
+        var result = await service.RequestSpeechChunksAsync(
+            ["chunk"],
+            fileId,
+            TestData.TtsRequestOptions,
+            progressContext.Progress,
+            default);
 
         Assert.Single(result);
         Assert.False(result[0].IsEmpty);
@@ -125,7 +140,10 @@ public sealed class NarakeetServiceTests
         var httpHandler = new Mock<HttpMessageHandler>(behavior);
 
         httpHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
@@ -137,7 +155,9 @@ public sealed class NarakeetServiceTests
         return (service, httpHandler);
     }
 
-    private static NarakeetService CreateService(IProgressTracker progressTracker, HttpMessageHandler httpMessageHandler)
+    private static NarakeetService CreateService(
+        IProgressTracker progressTracker,
+        HttpMessageHandler httpMessageHandler)
     {
         var httpClient = new HttpClient(httpMessageHandler)
         {

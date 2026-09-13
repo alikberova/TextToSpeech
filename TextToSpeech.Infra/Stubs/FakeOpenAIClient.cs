@@ -28,7 +28,9 @@ public static class FakeOpenAIClient
 
 sealed class FakeOpenAiHttpHandler : HttpMessageHandler
 {
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
     {
         if (request.Method == HttpMethod.Post)
         {

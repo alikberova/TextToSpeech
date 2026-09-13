@@ -5,7 +5,8 @@ namespace TextToSpeech.Infra.Services;
 
 public class CancellationRegistry : ICancellationRegistry
 {
-    private readonly ConcurrentDictionary<Guid, (string OwnerId, CancellationTokenSource Source)> _processingTasks = new();
+    private readonly ConcurrentDictionary<Guid, (string OwnerId, CancellationTokenSource Source)>
+        _processingTasks = new();
     private readonly SemaphoreSlim _cancellationLock = new(1, 1);
 
     public void AddTask(Guid fileId, string ownerId, CancellationTokenSource cts)

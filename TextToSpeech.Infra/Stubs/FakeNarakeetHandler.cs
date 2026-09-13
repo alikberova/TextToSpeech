@@ -47,29 +47,17 @@ public sealed class FakeNarakeetHandler : HttpMessageHandler
     {
         var uri = request.RequestUri;
         var path = uri?.AbsolutePath ?? "";
+
         if (request.Method == HttpMethod.Get &&
             string.Equals(path.TrimEnd('/'), "/voices", StringComparison.OrdinalIgnoreCase))
         {
-            await Delay.RandomShort(cancellationToken);
-            return Json(HttpStatusCode.OK, _voices);
+            return await GetVoicesAsync(cancellationToken);
         }
 
         // POST → create task
         if (request.Method == HttpMethod.Post)
         {
-            await Delay.RandomShort(cancellationToken);
-
-            var taskId = Guid.NewGuid().ToString("N");
-            var buildTask = new BuildTask
-            {
-                TaskId = taskId,
-                RequestId = $"req-{taskId}",
-                StatusUrl = new Uri(BaseAddress, $"{StatusPathPrefix}{taskId}").ToString()
-            };
-
-            _statusCallsByTaskId[taskId] = 0;
-
-            return Json(HttpStatusCode.OK, buildTask);
+            return await CreateTaskAsync(cancellationToken);
         }
 
         // GET status → in progress for several polls, then finished
@@ -78,24 +66,7 @@ public sealed class FakeNarakeetHandler : HttpMessageHandler
             statusTaskId is not null &&
             _statusCallsByTaskId.ContainsKey(statusTaskId))
         {
-            await Delay.RandomShort(cancellationToken);
-
-            var statusCalls = _statusCallsByTaskId.AddOrUpdate(
-                statusTaskId,
-                1,
-                (_, currentStatusCalls) => currentStatusCalls + 1);
-            if (statusCalls <= InProgressStatusCallCount)
-            {
-                return Json(HttpStatusCode.OK, _inProgress);
-            }
-
-            return Json(HttpStatusCode.OK, new BuildTaskStatus
-            {
-                Finished = true,
-                Succeeded = true,
-                Percent = 100,
-                Result = new Uri(BaseAddress, $"{ResultPathPrefix}{statusTaskId}").ToString()
-            });
+            return await GetStatusAsync(statusTaskId, cancellationToken);
         }
 
         // GET result → audio bytes
@@ -104,15 +75,67 @@ public sealed class FakeNarakeetHandler : HttpMessageHandler
             resultTaskId is not null &&
             _statusCallsByTaskId.ContainsKey(resultTaskId))
         {
-            await Delay.RandomShort(cancellationToken);
-
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new ByteArrayContent(_audioBytes)
-            };
+            return await GetResultAsync(cancellationToken);
         }
 
         return new HttpResponseMessage(HttpStatusCode.NotFound);
+    }
+
+    private async Task<HttpResponseMessage> GetVoicesAsync(CancellationToken cancellationToken)
+    {
+        await Delay.RandomShort(cancellationToken);
+
+        return Json(HttpStatusCode.OK, _voices);
+    }
+
+    private async Task<HttpResponseMessage> CreateTaskAsync(CancellationToken cancellationToken)
+    {
+        await Delay.RandomShort(cancellationToken);
+
+        var taskId = Guid.NewGuid().ToString("N");
+        var buildTask = new BuildTask
+        {
+            TaskId = taskId,
+            RequestId = $"req-{taskId}",
+            StatusUrl = new Uri(BaseAddress, $"{StatusPathPrefix}{taskId}").ToString()
+        };
+
+        _statusCallsByTaskId[taskId] = 0;
+
+        return Json(HttpStatusCode.OK, buildTask);
+    }
+
+    private async Task<HttpResponseMessage> GetStatusAsync(string statusTaskId, CancellationToken cancellationToken)
+    {
+        await Delay.RandomShort(cancellationToken);
+
+        var statusCalls = _statusCallsByTaskId.AddOrUpdate(
+            statusTaskId,
+            1,
+            (_, currentStatusCalls) => currentStatusCalls + 1);
+
+        if (statusCalls <= InProgressStatusCallCount)
+        {
+            return Json(HttpStatusCode.OK, _inProgress);
+        }
+
+        return Json(HttpStatusCode.OK, new BuildTaskStatus
+        {
+            Finished = true,
+            Succeeded = true,
+            Percent = 100,
+            Result = new Uri(BaseAddress, $"{ResultPathPrefix}{statusTaskId}").ToString()
+        });
+    }
+
+    private async Task<HttpResponseMessage> GetResultAsync(CancellationToken cancellationToken)
+    {
+        await Delay.RandomShort(cancellationToken);
+
+        return new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new ByteArrayContent(_audioBytes)
+        };
     }
 
     private static string? GetTaskId(string path, string pathPrefix)

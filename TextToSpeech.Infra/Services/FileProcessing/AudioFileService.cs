@@ -62,17 +62,19 @@ public static class AudioFileService
         int bitrateIndex = GetBitrateIndex(bitrate);
         int sampleRateIndex = GetSampleRateIndex(sampleRate);
 
-        byte[] header = new byte[4];
-        header[0] = 0xFF; // Sync byte 1
-        header[1] = 0xFB; // Sync byte 2, MPEG1, Layer III
-        header[2] = (byte)((bitrateIndex << 4) | (sampleRateIndex << 2) | (channels == 2 ? 0 : 1));
-        header[3] = 0x00; // No padding, no private, stereo, no copyright, no original, no emphasis
+        byte[] header =
+        [
+            0xFF, // Sync byte 1
+            0xFB, // Sync byte 2, MPEG1, Layer III
+            (byte)((bitrateIndex << 4) | (sampleRateIndex << 2) | (channels == 2 ? 0 : 1)),
+            0x00, // No padding, no private, stereo, no copyright, no original, no emphasis
+        ];
         return header;
     }
 
     private static int GetBitrateIndex(int bitrate)
     {
-        int[] bitrates = { 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 };
+        int[] bitrates = [32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320];
         for (int i = 0; i < bitrates.Length; i++)
         {
             if (bitrates[i] == bitrate)
@@ -85,7 +87,7 @@ public static class AudioFileService
 
     private static int GetSampleRateIndex(int sampleRate)
     {
-        int[] sampleRates = { 44100, 48000, 32000 };
+        int[] sampleRates = [44100, 48000, 32000];
         for (int i = 0; i < sampleRates.Length; i++)
         {
             if (sampleRates[i] == sampleRate)

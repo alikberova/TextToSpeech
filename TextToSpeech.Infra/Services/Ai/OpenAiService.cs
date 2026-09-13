@@ -56,7 +56,8 @@ public sealed class OpenAiService : ITtsService
 
                 var progress = _progressTracker.UpdateProgress(fileId, progressCallback, index, 100);
 
-                _logger.LogInformation("Processed chunk {ChunkIndex}/{TotalChunks} for file {FileId}. Progress: {Progress}%",
+                _logger.LogInformation(
+                    "Processed chunk {ChunkIndex}/{TotalChunks} for file {FileId}. Progress: {Progress}%",
                     index + 1, totalChunks, fileId, progress);
             },
             cancellationToken);
@@ -102,7 +103,11 @@ public sealed class OpenAiService : ITtsService
             ResponseFormat = ttsRequest.ResponseFormat.ToString()
         };
 
-        ClientResult<BinaryData> result = await AudioClient.GenerateSpeechAsync(text, ttsRequest.Voice.ProviderVoiceId, options, cancellationToken);
+        ClientResult<BinaryData> result = await AudioClient.GenerateSpeechAsync(
+            text,
+            ttsRequest.Voice.ProviderVoiceId,
+            options,
+            cancellationToken);
 
         return result.Value.ToMemory();
     }
