@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "format:check": "npx --yes prettier@3.9.6 --check ."
+    "format:check": "prettier --check ."
   },
   "prettier": {
     "printWidth": 120,
@@ -48,6 +48,7 @@
     "eslint": "^9.39.2",
     "jsdom": "^28.0.0",
     "knip": "^5.86.0",
+    "prettier": "3.9.6",
     "typescript": "~5.9.3",
     "typescript-eslint": "8.54.0",
     "vitest": "^4.1.11"
