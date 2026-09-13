@@ -2,7 +2,7 @@ FROM node:24-alpine AS build
 
 WORKDIR /src
 COPY package*.json /src/
-RUN npm ci
+RUN HUSKY=0 npm ci
 
 # Copy the rest of the source code
 COPY . /src
