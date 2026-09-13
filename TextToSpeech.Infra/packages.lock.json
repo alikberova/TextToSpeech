@@ -26,6 +26,12 @@
           "MimeKit": "4.16.0"
         }
       },
+      "Menees.Analyzers": {
+        "type": "Direct",
+        "requested": "[4.0.1, )",
+        "resolved": "4.0.1",
+        "contentHash": "YTMPnmgtutjukIa2KDAiA1fqYQDHmZ0jTawgQNYANYJWQegXbdjKtr1WcsT38LbrI269X6JrmJUrdCG0zTQdNg=="
+      },
       "Microsoft.AspNetCore.SignalR.Core": {
         "type": "Direct",
         "requested": "[1.2.0, )",
