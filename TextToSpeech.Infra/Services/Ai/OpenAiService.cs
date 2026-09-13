@@ -22,7 +22,10 @@ public sealed class OpenAiService : ITtsService
     private readonly IProgressTracker _progressTracker;
     private readonly IParallelExecutionService _parallelExecutionService;
 
-    public OpenAiService(OpenAIClient client, ILogger<OpenAiService> logger, IProgressTracker progressTracker,
+    public OpenAiService(
+        OpenAIClient client,
+        ILogger<OpenAiService> logger,
+        IProgressTracker progressTracker,
         IParallelExecutionService parallelExecutionService)
     {
         _client = client;
@@ -33,7 +36,8 @@ public sealed class OpenAiService : ITtsService
 
     private AudioClient AudioClient { get; set; } = default!;
 
-    public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
+    public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(
+        List<string> textChunks,
         Guid fileId,
         TtsRequestOptions ttsRequest,
         IProgress<ProgressReport> progressCallback,
@@ -45,7 +49,9 @@ public sealed class OpenAiService : ITtsService
 
         _progressTracker.InitializeFile(fileId, totalChunks);
 
-        await _parallelExecutionService.RunTasksFromItems(textChunks, MaxParallelChunks,
+        await _parallelExecutionService.RunTasksFromItems(
+            textChunks,
+            MaxParallelChunks,
             async (chunk, index) =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -56,15 +62,20 @@ public sealed class OpenAiService : ITtsService
 
                 var progress = _progressTracker.UpdateProgress(fileId, progressCallback, index, 100);
 
-                _logger.LogInformation("Processed chunk {ChunkIndex}/{TotalChunks} for file {FileId}. Progress: {Progress}%",
-                    index + 1, totalChunks, fileId, progress);
+                _logger.LogInformation(
+                    "Processed chunk {ChunkIndex}/{TotalChunks} for file {FileId}. Progress: {Progress}%",
+                    index + 1,
+                    totalChunks,
+                    fileId,
+                    progress);
             },
             cancellationToken);
 
         return results;
     }
 
-    public async Task<ReadOnlyMemory<byte>> RequestSpeechSample(string text,
+    public async Task<ReadOnlyMemory<byte>> RequestSpeechSample(
+        string text,
         TtsRequestOptions ttsRequest,
         CancellationToken cancellationToken = default)
     {
@@ -91,7 +102,9 @@ public sealed class OpenAiService : ITtsService
         return Task.FromResult<List<Voice>?>(voices);
     }
 
-    private async Task<ReadOnlyMemory<byte>> GenerateSpeech(string text, TtsRequestOptions ttsRequest,
+    private async Task<ReadOnlyMemory<byte>> GenerateSpeech(
+        string text,
+        TtsRequestOptions ttsRequest,
         CancellationToken cancellationToken)
     {
         AudioClient ??= GetClient(ttsRequest.Model!);
@@ -101,7 +114,11 @@ public sealed class OpenAiService : ITtsService
             ResponseFormat = ttsRequest.ResponseFormat.ToString()
         };
 
-        ClientResult<BinaryData> result = await AudioClient.GenerateSpeechAsync(text, ttsRequest.Voice.ProviderVoiceId, options, cancellationToken);
+        ClientResult<BinaryData> result = await AudioClient.GenerateSpeechAsync(
+            text,
+            ttsRequest.Voice.ProviderVoiceId,
+            options,
+            cancellationToken);
 
         return result.Value.ToMemory();
     }
