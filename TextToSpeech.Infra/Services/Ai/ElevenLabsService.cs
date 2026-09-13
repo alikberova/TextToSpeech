@@ -1,4 +1,4 @@
-﻿using ElevenLabs;
+using ElevenLabs;
 using ElevenLabs.Models;
 using ElevenLabs.TextToSpeech;
 using ElevenLabs.Voices;
@@ -11,23 +11,14 @@ using Voice = TextToSpeech.Core.Models.Voice;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
-public sealed class ElevenLabsService : ITtsService
+public sealed class ElevenLabsService(
+    ElevenLabsClient client,
+    ILogger<ElevenLabsService> logger,
+    IProgressTracker progressTracker,
+    IParallelExecutionService parallelExecutionService) : ITtsService
 {
     public int MaxLengthPerApiRequest { get; init; } = 4096;
     private const int MaxParallelChunks = 20;
-    private readonly ElevenLabsClient _client;
-    private readonly ILogger<ElevenLabsService> _logger;
-    private readonly IProgressTracker _progressTracker;
-    private readonly IParallelExecutionService _parallelExecutionService;
-
-    public ElevenLabsService(ElevenLabsClient client, ILogger<ElevenLabsService> logger, IProgressTracker progressTracker,
-        IParallelExecutionService parallelExecutionService)
-    {
-        _client = client;
-        _logger = logger;
-        _progressTracker = progressTracker;
-        _parallelExecutionService = parallelExecutionService;
-    }
 
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         Guid fileId,
@@ -38,9 +29,9 @@ public sealed class ElevenLabsService : ITtsService
         var totalChunks = textChunks.Count;
         var results = new ReadOnlyMemory<byte>[totalChunks];
 
-        _progressTracker.InitializeFile(fileId, totalChunks);
+        progressTracker.InitializeFile(fileId, totalChunks);
 
-        await _parallelExecutionService.RunTasksFromItems(textChunks, MaxParallelChunks,
+        await parallelExecutionService.RunTasksFromItems(textChunks, MaxParallelChunks,
             async (chunk, index) =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -49,10 +40,11 @@ public sealed class ElevenLabsService : ITtsService
 
                 results[index] = bytes;
 
-                var progress = _progressTracker.UpdateProgress(fileId, progressCallback, index, 100);
+                var progress = progressTracker.UpdateProgress(fileId, progressCallback, index, 100);
 
-                _logger.LogInformation("Processed chunk {ChunkIndex}/{TotalChunks} for file {FileId}. Progress: {Progress}%",
-                    index + 1, totalChunks, fileId, progress);
+                logger.LogInformation("Processed chunk {ChunkIndex}/{TotalChunks} for file {FileId}. " +
+                    "Progress: {Progress}%",
+                        index + 1, totalChunks, fileId, progress);
             },
             cancellationToken);
 
@@ -68,7 +60,7 @@ public sealed class ElevenLabsService : ITtsService
 
     public async Task<List<Voice>?> GetVoices()
     {
-        IReadOnlyList<ElevenLabs.Voices.Voice>? voices = await _client.VoicesEndpoint.GetAllVoicesAsync();
+        IReadOnlyList<ElevenLabs.Voices.Voice>? voices = await client.VoicesEndpoint.GetAllVoicesAsync();
 
         if (voices is null || voices.Count == 0)
         {
@@ -99,7 +91,7 @@ public sealed class ElevenLabsService : ITtsService
             outputFormat: MapOutputFormat(ttsRequest.ResponseFormat),
             model: new Model(ttsRequest.Model));
 
-        VoiceClip result = await _client.TextToSpeechEndpoint.TextToSpeechAsync(textToSpeechRequest,
+        VoiceClip result = await client.TextToSpeechEndpoint.TextToSpeechAsync(textToSpeechRequest,
             cancellationToken: cancellationToken);
 
         return result.ClipData;

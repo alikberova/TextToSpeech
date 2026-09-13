@@ -1,4 +1,4 @@
-﻿using static TextToSpeech.Core.Enums;
+using static TextToSpeech.Core.Enums;
 
 namespace TextToSpeech.Core.Entities;
 
@@ -64,10 +64,14 @@ public sealed class AudioFile
     public static bool operator ==(AudioFile left, AudioFile right)
     {
         if (ReferenceEquals(left, right))
+        {
             return true;
+        }
 
         if (left is null || right is null)
+        {
             return false;
+        }
 
         return left.Equals(right);
     }

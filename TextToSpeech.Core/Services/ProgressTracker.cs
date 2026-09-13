@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Models;
 
@@ -8,7 +8,8 @@ public sealed class ProgressTracker : IProgressTracker
 {
     private readonly ConcurrentDictionary<Guid, ConcurrentDictionary<int, int>> progressDictionary = new();
 
-    public int UpdateProgress(Guid fileId, IProgress<ProgressReport> progressCallback, int chunkIndex, int chunkProgress)
+    public int UpdateProgress(Guid fileId, IProgress<ProgressReport> progressCallback, int chunkIndex,
+        int chunkProgress)
     {
         var indexAndProgressDict = progressDictionary.GetOrAdd(fileId, _ => new ConcurrentDictionary<int, int>());
         indexAndProgressDict[chunkIndex] = chunkProgress;
