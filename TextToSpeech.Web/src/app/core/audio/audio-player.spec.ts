@@ -88,11 +88,11 @@ describe('AudioPlayer', () => {
     it('replaces existing URL on setBlob and revokes previous', () => {
         const player = new AudioPlayer(noop, noop);
         player.setBlob(new Blob([new Uint8Array([1])]));
-        expect(createdUrls.length).toBe(1);
+        expect(createdUrls).toHaveLength(1);
         expect(revokeCalls).toBe(0);
 
         player.setBlob(new Blob([new Uint8Array([2])]));
-        expect(createdUrls.length).toBe(2);
+        expect(createdUrls).toHaveLength(2);
         expect(revokeCalls).toBe(1);
     });
 });

@@ -16,7 +16,7 @@ public sealed class RedisCacheProvider(IConnectionMultiplexer redisConnection) :
 
         if (!cachedData.IsNullOrEmpty)
         {
-            return JsonSerializer.Deserialize<T>((string)cachedData!);
+            return JsonSerializer.Deserialize<T>((string)cachedData);
         }
 
         return default;
@@ -31,7 +31,7 @@ public sealed class RedisCacheProvider(IConnectionMultiplexer redisConnection) :
             return null;
         }
 
-        return (byte[])value!;
+        return (byte[])value;
     }
 
     public Task Set<T>(string key, T data, TimeSpan? expiry = null)

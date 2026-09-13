@@ -80,7 +80,7 @@ describe('TtsService', () => {
         const r = http.expectOne(SPEECH_BASE);
         expect(r.request.method).toBe('POST');
         // FormData check: browser serializes multipart; we can assert it is FormData by existence of get
-        expect(r.request.body instanceof FormData).toBe(true);
+        expect(r.request.body).toBeInstanceOf(FormData);
         const body = r.request.body as FormData;
         expect(body.get('TtsRequestOptions.Voice.ProviderVoiceId')).toBe('alloy');
         expect(body.get('TtsRequestOptions.Voice.Name')).toBe('Alloy');
