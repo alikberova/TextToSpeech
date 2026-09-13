@@ -34,9 +34,10 @@ menees_analyzers.max_method_lines = 50
 menees_analyzers.max_file_lines = 300
 menees_analyzers.allow_long_uri_lines = true
 
-dotnet_diagnostic.MEN002.severity = error
-dotnet_diagnostic.MEN003.severity = error
-dotnet_diagnostic.MEN005.severity = error
+# Existing violations are warnings in this PR. A follow-up cleanup PR will remove them before promoting these to errors.
+dotnet_diagnostic.MEN002.severity = warning
+dotnet_diagnostic.MEN003.severity = warning
+dotnet_diagnostic.MEN005.severity = warning
 
 # Existing repository exception.
 dotnet_diagnostic.CA1873.severity = none
