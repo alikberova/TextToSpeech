@@ -45,7 +45,7 @@ describe('SignalRService', () => {
         registeredCallback!(fileId, 'Processing', 42, undefined);
         registeredCallback!('id-2', 'Processing', undefined as unknown as number, 'bad');
 
-        expect(calls.length).toBe(2);
+        expect(calls).toHaveLength(2);
         expect(calls[0]).toEqual({ id: fileId, status: 'Processing', progress: 42, error: undefined });
         expect(calls[1]).toEqual({ id: 'id-2', status: 'Processing', progress: null, error: 'bad' });
     });
