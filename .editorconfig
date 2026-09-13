@@ -21,12 +21,27 @@ dotnet_style_allow_multiple_blank_lines_experimental = false:error
 dotnet_diagnostic.IDE0011.severity = error
 dotnet_diagnostic.IDE0055.severity = error
 
-# Menees.Analyzers is included only for deterministic size limits. Disable its unrelated rules.
-dotnet_analyzer_diagnostic.category-Design.severity = none
-dotnet_analyzer_diagnostic.category-Layout.severity = none
-dotnet_analyzer_diagnostic.category-Naming.severity = none
-dotnet_analyzer_diagnostic.category-Spacing.severity = none
-dotnet_analyzer_diagnostic.category-Usage.severity = none
+# Menees.Analyzers is included only for deterministic size limits. Disable its unrelated diagnostics individually.
+dotnet_diagnostic.MEN001.severity = none
+dotnet_diagnostic.MEN002A.severity = none
+dotnet_diagnostic.MEN004.severity = none
+dotnet_diagnostic.MEN006.severity = none
+dotnet_diagnostic.MEN007.severity = none
+dotnet_diagnostic.MEN008.severity = none
+dotnet_diagnostic.MEN009.severity = none
+dotnet_diagnostic.MEN010.severity = none
+dotnet_diagnostic.MEN011.severity = none
+dotnet_diagnostic.MEN012.severity = none
+dotnet_diagnostic.MEN013.severity = none
+dotnet_diagnostic.MEN014.severity = none
+dotnet_diagnostic.MEN015.severity = none
+dotnet_diagnostic.MEN016.severity = none
+dotnet_diagnostic.MEN017.severity = none
+dotnet_diagnostic.MEN018.severity = none
+dotnet_diagnostic.MEN019.severity = none
+dotnet_diagnostic.MEN020B.severity = none
+dotnet_diagnostic.MEN020S.severity = none
+dotnet_diagnostic.MEN020E.severity = none
 
 menees_analyzers.tab_size = 4
 menees_analyzers.max_line_columns = 120
