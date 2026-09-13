@@ -5,10 +5,7 @@ export class AudioPlayer {
   private audio?: HTMLAudioElement;
   private url?: string;
 
-  constructor(
-    private readonly onEnded: () => void,
-    private readonly onError: () => void,
-  ) {}
+  constructor(private readonly onEnded: () => void, private readonly onError: () => void) {}
 
   setBlob(blob: Blob): void {
     this.disposeUrl();

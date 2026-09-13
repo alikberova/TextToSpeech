@@ -1,11 +1,4 @@
-import {
-  ApplicationConfig,
-  importProvidersFrom,
-  inject,
-  provideAppInitializer,
-  provideBrowserGlobalErrorListeners,
-  provideZonelessChangeDetection,
-} from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, inject, provideAppInitializer, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors, HttpClient } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -24,11 +17,11 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     { provide: API_URL, useValue: `${environment.serverUrl}/api` },
     { provide: SERVER_URL, useValue: environment.serverUrl },
-    provideAppInitializer(() => {
+    provideAppInitializer(() =>  {
       const guest = inject(GuestTokenService);
       return guest.ensureValidToken(true);
     }),
-    provideHttpClient(withInterceptors([baseUrlInterceptor, authInterceptor])),
+    provideHttpClient(withInterceptors([baseUrlInterceptor, authInterceptor ])),
     // Configure ngx-translate to load JSON files from /i18n/* via the public folder.
     importProvidersFrom(
       TranslateModule.forRoot({
@@ -41,7 +34,7 @@ export const appConfig: ApplicationConfig = {
         useDefaultLang: true,
       }),
     ),
-  ],
+  ]
 };
 
 // Minimal JSON loader for ngx-translate using HttpClient
@@ -49,8 +42,7 @@ class JsonTranslateLoader implements TranslateLoader {
   constructor(
     private readonly http: HttpClient,
     private readonly prefix = '/i18n/',
-    private readonly suffix = '.json',
-  ) {}
+    private readonly suffix = '.json') {}
 
   getTranslation(lang: string) {
     return this.http.get<Record<string, unknown>>(`${this.prefix}${lang}${this.suffix}`);

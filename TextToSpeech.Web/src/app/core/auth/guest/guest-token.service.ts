@@ -12,7 +12,7 @@ interface GuestTokenResponse {
 interface TokenState {
   token: string;
   expiresAtUtc: string;
-}
+};
 
 @Injectable({ providedIn: 'root' })
 export class GuestTokenService {
@@ -65,7 +65,10 @@ export class GuestTokenService {
       const url = `${this.apiUrl}${AUTH_GUEST}`;
       const res = await firstValueFrom(this.http.post<GuestTokenResponse>(url, {}));
 
-      this.setState({ token: res.accessToken, expiresAtUtc: res.expiresAtUtc }, persistInSession);
+      this.setState(
+        { token: res.accessToken, expiresAtUtc: res.expiresAtUtc },
+        persistInSession
+      );
 
       return res.accessToken;
     })();

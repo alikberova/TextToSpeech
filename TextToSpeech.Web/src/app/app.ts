@@ -5,6 +5,7 @@ import { AppShellComponent } from './layout/app-shell.component';
   selector: 'app-root',
   imports: [AppShellComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss',
+  styleUrl: './app.scss'
 })
-export class App {}
+export class App {
+}

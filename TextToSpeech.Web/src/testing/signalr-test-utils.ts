@@ -13,7 +13,7 @@ export function setSignalRHub(service: SignalRService, hub: Partial<signalR.HubC
  * Creates a Partial HubConnection that wires the provided spy to the `on` callback.
  */
 export function createHubWithOnSpy(
-  onSpy: (event: string, cb: AudioStatusCallback) => unknown,
+  onSpy: (event: string, cb: AudioStatusCallback) => unknown
 ): Partial<signalR.HubConnection> {
   return {
     on: onSpy as unknown as signalR.HubConnection['on'],

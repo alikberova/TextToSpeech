@@ -7,7 +7,10 @@ import { describe, beforeEach, it, expect } from 'vitest';
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App, getTranslateTestingModule()],
+      imports: [
+        App,
+        getTranslateTestingModule(),
+      ],
       providers: getZonelessProviders([provideRouter([])]),
     }).compileComponents();
   });

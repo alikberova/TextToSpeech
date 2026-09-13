@@ -1,14 +1,9 @@
-import { describe, expect, it } from 'vitest';
-import {
-  createHomeFixture,
-  providerKeyWithModel,
-  SELECTOR_VOICE_SELECT,
-  ATTR_ARIA_DISABLED,
-  flushVoice,
-} from './home.page.spec-setup';
-import { VOICES } from './test-data';
+import { describe, expect, it } from "vitest";
+import { createHomeFixture, providerKeyWithModel, SELECTOR_VOICE_SELECT, ATTR_ARIA_DISABLED, flushVoice } from "./home.page.spec-setup";
+import { VOICES } from "./test-data";
 
 describe('HomePage - Voice dropdown behavior', () => {
+
   it('voice dropdown disabled until provider selected and enables after provider/language as needed', async () => {
     const { fixture, component, httpController } = await createHomeFixture();
     const voiceSelect = fixture.nativeElement.querySelector(SELECTOR_VOICE_SELECT);
@@ -25,4 +20,6 @@ describe('HomePage - Voice dropdown behavior', () => {
     expect(voiceSelectAfter.getAttribute(ATTR_ARIA_DISABLED)).toBe('false');
     expect(component.voicesForProvider().length).toBeGreaterThan(0);
   });
+
 });
+

@@ -28,18 +28,13 @@ export const ATTR_ARIA_DISABLED = 'aria-disabled';
 export const ATTR_ARIA_INVALID = 'aria-invalid';
 
 export async function createHomeFixture(extraProviders: unknown[] = []) {
-  await TestBed.resetTestingModule()
-    .configureTestingModule({
-      imports: [
-        HomePage,
-        TranslateModule.forRoot({
-          loader: { provide: TranslateLoader, useClass: TranslateFakeLoader },
-          useDefaultLang: true,
-        }),
-      ],
-      providers: [...getBaseProviders(), ...extraProviders],
-    })
-    .compileComponents();
+  await TestBed.resetTestingModule().configureTestingModule({
+    imports: [
+      HomePage,
+      TranslateModule.forRoot({ loader: { provide: TranslateLoader, useClass: TranslateFakeLoader }, useDefaultLang: true }),
+    ],
+    providers: [...getBaseProviders(), ...extraProviders],
+  }).compileComponents();
 
   const fixture = TestBed.createComponent(HomePage);
   const component = fixture.componentInstance;
@@ -50,11 +45,11 @@ export async function createHomeFixture(extraProviders: unknown[] = []) {
 }
 
 export function providerKeyWithModel(): ProviderKey {
-  return (PROVIDERS.find((p) => Array.isArray(PROVIDER_MODELS[p.key])) || PROVIDERS[0]).key;
+  return (PROVIDERS.find(p => Array.isArray(PROVIDER_MODELS[p.key])) || PROVIDERS[0]).key;
 }
 
 export function providerKeyWithoutModel(): ProviderKey {
-  return (PROVIDERS.find((p) => PROVIDER_MODELS[p.key] === null) || PROVIDERS[0]).key;
+  return (PROVIDERS.find(p => PROVIDER_MODELS[p.key] === null) || PROVIDERS[0]).key;
 }
 
 export function fillValidFormForOpenAI(component: HomePage): void {
@@ -93,12 +88,12 @@ export function getOverlayOptionTexts(overlayContainer: OverlayContainer): strin
   const container: HTMLElement = overlayContainer.getContainerElement();
   const elements = container.querySelectorAll(SELECTOR_MAT_OPTION);
   return Array.from(elements)
-    .map((option) => (option.textContent || '').trim())
+    .map(option => (option.textContent || '').trim())
     .filter(Boolean);
 }
 
 export function expectOneEndsWith(http: HttpTestingController, suffix: string): TestRequest {
-  return http.expectOne((request) => request.url.endsWith(suffix));
+  return http.expectOne(request => request.url.endsWith(suffix));
 }
 
 export function flushVoice(http: HttpTestingController, voices: Voice[]): void {
@@ -110,7 +105,7 @@ export function setProviderNarakeet(
   fixture: ComponentFixture<HomePage>,
   component: HomePage,
   http: HttpTestingController,
-  voices: Voice[] = [],
+  voices: Voice[] = []
 ): void {
   const narakeet = providerKeyWithoutModel();
   component.onProviderChange(narakeet);
@@ -122,9 +117,9 @@ export function setProviderElevenLabs(
   fixture: ComponentFixture<HomePage>,
   component: HomePage,
   http: HttpTestingController,
-  voices: Voice[] = [],
+  voices: Voice[] = []
 ): void {
-  const elevenLabsKey = PROVIDERS.find((p) => p.key === ELEVEN_LABS_KEY)?.key as ProviderKey;
+  const elevenLabsKey = PROVIDERS.find(p => p.key === ELEVEN_LABS_KEY)?.key as ProviderKey;
   component.onProviderChange(elevenLabsKey);
   flushVoice(http, voices);
   fixture.detectChanges();

@@ -34,3 +34,4 @@ export class I18nService {
     return raw === 'uk' ? 'uk' : 'en';
   }
 }
+

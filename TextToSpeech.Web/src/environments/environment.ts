@@ -1,4 +1,4 @@
 export const environment = {
-  name: '',
-  serverUrl: '',
+  name: "",
+  serverUrl: ""
 };

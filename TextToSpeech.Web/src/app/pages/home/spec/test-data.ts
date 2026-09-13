@@ -1,4 +1,4 @@
-import { Voice } from '../../../dto/voice';
+import { Voice } from "../../../dto/voice";
 
 export const PROGRESS_PROCESSING_VALUE = 40;
 export const PROGRESS_VALID_VALUE = 55;
@@ -20,30 +20,34 @@ const VOICE_1: Voice = {
   name: 'Harry',
   providerVoiceId: 'harry',
   language: null,
-  qualityTier: 'Standard',
+  qualityTier: 'Standard'
 };
 
 const VOICE_2: Voice = {
   name: 'Ben',
   providerVoiceId: 'ben',
   language: null,
-  qualityTier: 'Standard',
+  qualityTier: 'Standard'
 };
 
 const VOICE_WITH_LANG_1: Voice = {
   name: 'Melissa',
   providerVoiceId: 'melissa',
   language: { name: 'English', languageCode: LANGUAGE_CODE_EN_US },
-  qualityTier: 'Standard',
+  qualityTier: 'Standard'
 };
 
 const VOICE_WITH_LANG_2: Voice = {
   name: 'Eleni',
   providerVoiceId: 'eleni',
   language: { name: 'Greek', languageCode: LANGUAGE_CODE_EL_GR },
-  qualityTier: 'Standard',
+  qualityTier: 'Standard'
 };
 
-export const VOICES: Voice[] = [VOICE_1, VOICE_2] as const;
+export const VOICES: Voice[] = [
+  VOICE_1, VOICE_2,
+] as const;
 
-export const VOICES_WITH_LANG: Voice[] = [VOICE_WITH_LANG_1, VOICE_WITH_LANG_2] as const;
+export const VOICES_WITH_LANG: Voice[] = [
+  VOICE_WITH_LANG_1, VOICE_WITH_LANG_2,
+] as const;

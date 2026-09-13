@@ -10,7 +10,8 @@ export function getLanguagesFromVoices(voices: readonly Voice[]): LangSelectOpti
       map.set(code, `languages.${code}`);
     }
   }
-  return Array.from(map.entries()).map(([key, label]) => ({ key, label, displayText: '' }));
+  return Array.from(map.entries())
+    .map(([key, label]) => ({ key, label, displayText: '' }))
 }
 
 // Build voices options based on provider and optional language
@@ -22,8 +23,8 @@ export function getVoicesForProvider(
   if (!providerKey) {
     return [] as const;
   }
-  const filtered = voices.filter((v) => !languageCode || v.language?.languageCode === languageCode);
-  return filtered.map((v) => ({ key: v.providerVoiceId, label: capitalizeFirstLetter(v.name) }));
+  const filtered = voices.filter(v => !languageCode || v.language?.languageCode === languageCode);
+  return filtered.map(v => ({ key: v.providerVoiceId, label: capitalizeFirstLetter(v.name) }));
 }
 
 // Map server status to an appropriate Material icon name
