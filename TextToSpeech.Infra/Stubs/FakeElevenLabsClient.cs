@@ -55,9 +55,12 @@ sealed class FakeElevenLabsHandler : HttpMessageHandler
         return new FakeElevenLabsHandler(voicesResponse, audioBytes);
     }
 
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
     {
-        if (request.Method == HttpMethod.Get && request.RequestUri!.AbsolutePath.Contains("voices", StringComparison.OrdinalIgnoreCase))
+        if (request.Method == HttpMethod.Get &&
+            request.RequestUri!.AbsolutePath.Contains("voices", StringComparison.OrdinalIgnoreCase))
         {
             await Delay.RandomShort(cancellationToken);
 
@@ -66,7 +69,8 @@ sealed class FakeElevenLabsHandler : HttpMessageHandler
             };
         }
 
-        if (request.Method == HttpMethod.Post && request.RequestUri!.AbsolutePath.Contains("text-to-speech", StringComparison.OrdinalIgnoreCase))
+        if (request.Method == HttpMethod.Post &&
+            request.RequestUri!.AbsolutePath.Contains("text-to-speech", StringComparison.OrdinalIgnoreCase))
         {
             await Delay.RandomMedium(cancellationToken);
 
