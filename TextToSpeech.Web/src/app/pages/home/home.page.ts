@@ -9,13 +9,31 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { NARAKEET_KEY, OPEN_AI_KEY, ELEVEN_LABS_KEY, PROVIDER_MODELS, ProviderKey, PROVIDERS, ACCEPTABLE_FILE_TYPES, PROVIDER_RESPONSE_FORMATS, RESPONSE_FORMATS } from '../../constants/tts-constants';
+import {
+  NARAKEET_KEY,
+  OPEN_AI_KEY,
+  ELEVEN_LABS_KEY,
+  PROVIDER_MODELS,
+  ProviderKey,
+  PROVIDERS,
+  ACCEPTABLE_FILE_TYPES,
+  PROVIDER_RESPONSE_FORMATS,
+  RESPONSE_FORMATS,
+} from '../../constants/tts-constants';
 import { TtsService } from '../../core/http/tts/tts.service';
 import { SignalRService } from '../../core/realtime/signalr.service';
 import { VoiceService } from '../../core/http/voice/voice.service';
 import type { Voice } from '../../dto/voice';
 import { buildDownloadFilename, getLanguagesFromVoices, getVoicesForProvider, mapStatusToIcon } from './home.helpers';
-import { AUDIO_STATUS, FieldKey, LangSelectOption, SamplePlaybackIcon, SampleValidationResult, type AudioStatus, type SelectOption } from './home.types';
+import {
+  AUDIO_STATUS,
+  FieldKey,
+  LangSelectOption,
+  SamplePlaybackIcon,
+  SampleValidationResult,
+  type AudioStatus,
+  type SelectOption,
+} from './home.types';
 import { UpperCasePipe } from '@angular/common';
 import { TtsRequest } from '../../dto/tts-request';
 import { SamplePlaybackController } from './home.sample-playback.controller';
@@ -73,10 +91,7 @@ export class HomePage implements OnInit, OnDestroy {
   private readonly isSampleUserEdited = signal<boolean>(false);
   // Stores the last auto-applied sample text so we can detect divergence.
   private readonly lastAutoSampleText = signal<string>('');
-  private readonly sampleController = new SamplePlaybackController(
-    this.tts,
-    this.uiNotify
-  );
+  private readonly sampleController = new SamplePlaybackController(this.tts, this.uiNotify);
 
   // Generation state
   private readonly currentFileId = signal<string | null>(null);
@@ -115,10 +130,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
     const items = getLanguagesFromVoices(this.voices());
     // Compares strings using the current UI language rules
-    const collator = new Intl.Collator(
-      this.translate.currentLang,
-      { sensitivity: 'base' }
-    );
+    const collator = new Intl.Collator(this.translate.currentLang, { sensitivity: 'base' });
     return items
       .map((langOption) => ({
         ...langOption, // copy all props into new object
@@ -153,15 +165,15 @@ export class HomePage implements OnInit, OnDestroy {
     return providerOk && modelOk && languageOk && voiceOk && fileOk;
   });
 
-  selectedVoiceLabel = computed(() => this.voicesForProvider().find(v => v.key === this.voice())?.label ?? '');
+  selectedVoiceLabel = computed(() => this.voicesForProvider().find((v) => v.key === this.voice())?.label ?? '');
   // Selected provider label for displaying placeholder text in trigger when empty
-  selectedProviderLabel = computed(() => this.providers.find(p => p.key === this.provider())?.label ?? '');
+  selectedProviderLabel = computed(() => this.providers.find((p) => p.key === this.provider())?.label ?? '');
   selectedVoiceDetails: Signal<Voice | null> = computed(() => {
     const voiceId = this.voice();
     if (!voiceId) {
       return null;
     }
-    return this.voices().find(v => v.providerVoiceId === voiceId) ?? null;
+    return this.voices().find((v) => v.providerVoiceId === voiceId) ?? null;
   });
   availableResponseFormats: Signal<readonly string[]> = computed(() => {
     const providerKey = this.provider();
@@ -212,7 +224,7 @@ export class HomePage implements OnInit, OnDestroy {
   // 8) Public event handlers and actions (template-facing)
   onProviderChange(provider: string): void {
     const knownProviders = [OPEN_AI_KEY, NARAKEET_KEY, ELEVEN_LABS_KEY] as const;
-    const providerKey = knownProviders.includes(provider as ProviderKey) ? provider as ProviderKey : '';
+    const providerKey = knownProviders.includes(provider as ProviderKey) ? (provider as ProviderKey) : '';
     this.provider.set(providerKey);
     this.model.set('');
     this.voice.set('');
@@ -443,7 +455,9 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private syncResponseFormatForProvider(providerKey: ProviderKey | ''): void {
-    const allowedFormats = providerKey ? this.responseFormatsByProvider[providerKey] ?? this.responseFormats : this.responseFormats;
+    const allowedFormats = providerKey
+      ? (this.responseFormatsByProvider[providerKey] ?? this.responseFormats)
+      : this.responseFormats;
     if (!allowedFormats.includes(this.responseFormat())) {
       this.responseFormat.set(allowedFormats[0]);
     }
@@ -515,5 +529,4 @@ export class HomePage implements OnInit, OnDestroy {
       },
     });
   }
-
 }

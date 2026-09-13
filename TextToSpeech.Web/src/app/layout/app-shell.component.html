@@ -14,9 +14,15 @@
 
       <nav class="nav" aria-label="Primary">
         <!-- Use exact matching so only the active link is underlined -->
-        <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.generate' | translate }}</a>
-        <a mat-button routerLink="/feedback" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.feedback' | translate }}</a>
-        <a mat-button routerLink="/about" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.about' | translate }}</a>
+        <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{
+          'nav.generate' | translate
+        }}</a>
+        <a mat-button routerLink="/feedback" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{
+          'nav.feedback' | translate
+        }}</a>
+        <a mat-button routerLink="/about" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{
+          'nav.about' | translate
+        }}</a>
       </nav>
 
       <div class="actions">
@@ -46,9 +52,15 @@
   <div class="container footer-content">
     <div class="copy">© {{ 'app.footer.copyright' | translate }}</div>
     <nav class="footer-nav" aria-label="Footer">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.generate' | translate }}</a>
-      <a routerLink="/feedback" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.feedback' | translate }}</a>
-      <a routerLink="/about" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.about' | translate }}</a>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{
+        'nav.generate' | translate
+      }}</a>
+      <a routerLink="/feedback" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{
+        'nav.feedback' | translate
+      }}</a>
+      <a routerLink="/about" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{
+        'nav.about' | translate
+      }}</a>
     </nav>
   </div>
 </footer>

@@ -16,11 +16,9 @@ export class SignalRService {
     const audioHubUrl = `${inject(SERVER_URL)}/audioHub`;
     this.hub = new signalR.HubConnectionBuilder()
       .withUrl(audioHubUrl, {
-          accessTokenFactory: () => this.guestTokenService.getToken() ?? '',
-        })
-      .configureLogging(environment.name === 'development'
-        ? signalR.LogLevel.Information
-        : signalR.LogLevel.Error)
+        accessTokenFactory: () => this.guestTokenService.getToken() ?? '',
+      })
+      .configureLogging(environment.name === 'development' ? signalR.LogLevel.Information : signalR.LogLevel.Error)
       .withAutomaticReconnect()
       .build();
     this.hub.start().catch((err: unknown) => console.error('SignalR start error', err));
@@ -36,9 +34,12 @@ export class SignalRService {
   }
 
   addAudioStatusListener(callback: AudioStatusCallback) {
-    this.hub?.on('AudioStatusUpdated', (fileId: string, status: string, progress?: number | null, errorMessage?: string) => {
-      callback(fileId, status, progress ?? null, errorMessage);
-    });
+    this.hub?.on(
+      'AudioStatusUpdated',
+      (fileId: string, status: string, progress?: number | null, errorMessage?: string) => {
+        callback(fileId, status, progress ?? null, errorMessage);
+      },
+    );
   }
 
   cancelProcessing(fileId: string) {

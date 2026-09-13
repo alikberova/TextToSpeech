@@ -1,6 +1,6 @@
 import { createHomeFixture } from './home.page.spec-setup';
 import { AUDIO_STATUS, type AudioStatus } from '../home.types';
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
 describe('HomePage - Icon mapping', () => {
   it('progressIcon maps statuses to material icons', async () => {

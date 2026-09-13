@@ -29,4 +29,3 @@ export class AppShellComponent {
   protected readonly title = signal('TTS Studio');
   protected readonly i18n = inject(I18nService);
 }
-

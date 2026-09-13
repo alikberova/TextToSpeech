@@ -13,4 +13,3 @@ import { TranslateModule } from '@ngx-translate/core';
   `,
 })
 export class FeedbackPage {}
-
