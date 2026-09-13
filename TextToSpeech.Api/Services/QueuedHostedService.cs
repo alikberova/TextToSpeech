@@ -2,7 +2,9 @@
 
 namespace TextToSpeech.Api.Services;
 
-internal sealed class QueuedHostedService(IBackgroundTaskQueue _taskQueue, ILogger<QueuedHostedService> _logger) : BackgroundService
+internal sealed class QueuedHostedService(
+    IBackgroundTaskQueue _taskQueue,
+    ILogger<QueuedHostedService> _logger) : BackgroundService
 {
     private const int MaxConcurrentTasks = 100;
 

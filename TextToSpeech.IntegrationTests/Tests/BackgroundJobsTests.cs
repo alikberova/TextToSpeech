@@ -36,7 +36,9 @@ public sealed class BackgroundJobsTests : IAsyncLifetime
     public async Task ExpiredWorker_CannotCompleteAfterRecoveryAndRetry()
     {
         await using var context = _database.CreateContext();
-        var jobs = new BackgroundJobs(context);
+        var jobs = new BackgroundJobs(
+            new BackgroundJobStore(context),
+            new BackgroundJobStateTransitions(context));
         var submitJob = new SubmitBackgroundJob(context);
         var submission = CreateSubmission();
         var accepted = await submitJob.SubmitAsync(submission, CancellationToken.None);
@@ -47,7 +49,11 @@ public sealed class BackgroundJobsTests : IAsyncLifetime
         Assert.NotNull(original);
 
         await context.Database.ExecuteSqlInterpolatedAsync(
-            $"UPDATE jobs.\"BackgroundJob\" SET \"LeaseExpiresAt\" = clock_timestamp() - interval '1 second' WHERE \"Id\" = {accepted.JobId}");
+            $"""
+            UPDATE jobs."BackgroundJob"
+            SET "LeaseExpiresAt" = clock_timestamp() - interval '1 second'
+            WHERE "Id" = {accepted.JobId}
+            """);
         Assert.True(await jobs.RecoverExpiredAsync(accepted.JobId, CancellationToken.None));
         Assert.Null(await jobs.TryStartAsync(accepted.JobId, lease, CancellationToken.None));
         Assert.True(await jobs.ResolveRecoveryAsync(accepted.JobId, true, CancellationToken.None));

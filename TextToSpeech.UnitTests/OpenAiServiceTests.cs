@@ -55,7 +55,12 @@ public sealed class OpenAiServiceTests
 
         // Act / Assert
         await Assert.ThrowsAsync<TaskCanceledException>(() =>
-            service.RequestSpeechChunksAsync(["text"], Guid.NewGuid(), TestData.TtsRequestOptions, Mocks.ProgressCallback, cts.Token));
+            service.RequestSpeechChunksAsync(
+                ["text"],
+                Guid.NewGuid(),
+                TestData.TtsRequestOptions,
+                Mocks.ProgressCallback,
+                cts.Token));
     }
 
     [Fact]
@@ -77,7 +82,9 @@ public sealed class OpenAiServiceTests
         Assert.Equal(new[] { 100, 100 }, progressContext.ReportedPercentages);
 
         progressContext.TrackerMock.Verify(p => p.InitializeFile(fileId, textChunks.Count), Times.Once);
-        progressContext.TrackerMock.Verify(p => p.UpdateProgress(fileId, progressContext.Progress, It.IsAny<int>(), 100), Times.Exactly(textChunks.Count));
+        progressContext.TrackerMock.Verify(
+            p => p.UpdateProgress(fileId, progressContext.Progress, It.IsAny<int>(), 100),
+            Times.Exactly(textChunks.Count));
     }
 
     [Fact]

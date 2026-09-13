@@ -20,13 +20,19 @@ public sealed class TtsFormPage
     }
 
     private static By DownloadButtonBy => By.CssSelector($"button[data-testid='{DataTestId.DownloadBtn}']");
-    private IWebElement ProviderSelect => _driver.FindElement(By.CssSelector($"mat-select[name='{NameAttributes.Provider}']"));
-    private IWebElement? LanguageSelect => _driver.FindElements(By.CssSelector($"mat-select[name='{NameAttributes.Language}']")).FirstOrDefault();
-    private IWebElement VoiceSelect => _driver.FindElement(By.CssSelector($"mat-select[name='{NameAttributes.Voice}']"));
+    private IWebElement ProviderSelect =>
+        _driver.FindElement(By.CssSelector($"mat-select[name='{NameAttributes.Provider}']"));
+    private IWebElement? LanguageSelect =>
+        _driver.FindElements(By.CssSelector($"mat-select[name='{NameAttributes.Language}']")).FirstOrDefault();
+    private IWebElement VoiceSelect =>
+        _driver.FindElement(By.CssSelector($"mat-select[name='{NameAttributes.Voice}']"));
     private IWebElement FileInput => _driver.FindElement(By.Id(Ids.FileInput));
-    private IWebElement SampleTextArea => _driver.FindElement(By.CssSelector($"textarea[data-testid='{DataTestId.SampleTextArea}']"));
-    private IWebElement? SamplePlayButton => _driver.FindElement(By.CssSelector($"button[data-testid='{DataTestId.SamplePlayButton}']"));
-    private IWebElement SubmitButton => _driver.FindElement(By.CssSelector($"button[data-testid='{DataTestId.SubmitBtn}']"));
+    private IWebElement SampleTextArea =>
+        _driver.FindElement(By.CssSelector($"textarea[data-testid='{DataTestId.SampleTextArea}']"));
+    private IWebElement? SamplePlayButton =>
+        _driver.FindElement(By.CssSelector($"button[data-testid='{DataTestId.SamplePlayButton}']"));
+    private IWebElement SubmitButton =>
+        _driver.FindElement(By.CssSelector($"button[data-testid='{DataTestId.SubmitBtn}']"));
     private IWebElement DownloadButton => _wait.UntilVisibleAndEnabled(DownloadButtonBy);
     public bool IsProgressPanelVisible() => _driver.FindElements(By.CssSelector(Selectors.ProgressPanel)).Count != 0;
 
@@ -148,6 +154,7 @@ public sealed class TtsFormPage
 
         // translate lowercases the element text 
         return _wait.UntilVisibleAndEnabled(By.XPath(
-            $"//mat-option/span[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{lower}')]"));
+            $"//mat-option/span[contains(translate(text(), " +
+            $"'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{lower}')]"));
     }
 }

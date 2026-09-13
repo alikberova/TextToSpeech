@@ -21,7 +21,11 @@ internal static class Mocks
         var trackerMock = new Mock<IProgressTracker>();
 
         trackerMock.Setup(t => t.InitializeFile(fileId, It.IsAny<int>()));
-        trackerMock.Setup(t => t.UpdateProgress(fileId, It.IsAny<IProgress<ProgressReport>>(), It.IsAny<int>(), It.IsAny<int>()))
+        trackerMock.Setup(t => t.UpdateProgress(
+                fileId,
+                It.IsAny<IProgress<ProgressReport>>(),
+                It.IsAny<int>(),
+                It.IsAny<int>()))
             .Callback<Guid, IProgress<ProgressReport>, int, int>((_, callback, _, chunkProgress) =>
             {
                 callback.Report(new ProgressReport { FileId = fileId, ProgressPercentage = chunkProgress });
@@ -35,4 +39,7 @@ internal static class Mocks
         new(Mock.Of<ILogger<ParallelExecutionService>>());
 }
 
-internal sealed record ProgressTrackerContext(Mock<IProgressTracker> TrackerMock, Progress<ProgressReport> Progress, List<int> ReportedPercentages);
+internal sealed record ProgressTrackerContext(
+    Mock<IProgressTracker> TrackerMock,
+    Progress<ProgressReport> Progress,
+    List<int> ReportedPercentages);

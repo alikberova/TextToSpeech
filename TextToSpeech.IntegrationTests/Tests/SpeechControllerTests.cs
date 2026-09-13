@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using TextToSpeech.Api;
 using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Constants;
 using Xunit.Abstractions;
@@ -35,7 +36,8 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         await Authenticate();
 
         // Arrange
-        var httpContent = new StringContent(JsonSerializer.Serialize(SpeechRequestGenerator.GenerateFakeSpeechRequest(ttsApi)),
+        var httpContent = new StringContent(
+            JsonSerializer.Serialize(SpeechRequestGenerator.GenerateFakeSpeechRequest(ttsApi)),
             Encoding.UTF8, "application/json");
 
         // Act
@@ -57,33 +59,9 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         var token = await Authenticate();
         var hubConnection = BuildHubConnection(_client, _factory, token);
 
-        var spechStatusUpdated = new TaskCompletionSource<bool>();
-        var expectedFileId = new TaskCompletionSource<Guid>();
+        var statusCapture = new SpeechStatusCapture();
 
-        var status = string.Empty;
-        string? errorMessage = null;
-        Guid? fileId = null;
-        var progressReports = new List<int?>();
-
-        hubConnection.On<Guid, string, int?, string?>(Shared.AudioStatusUpdated, async (fileIdResult, updatedStatus, progressPercentage, errorMessageResult) =>
-        {
-            if (fileIdResult != await expectedFileId.Task)
-            {
-                return;
-            }
-
-            status = updatedStatus;
-            errorMessage = errorMessageResult;
-            fileId = fileIdResult;
-            if (progressPercentage.HasValue)
-            {
-                progressReports.Add(progressPercentage);
-            }
-            if (updatedStatus == Status.Completed.ToString())
-            {
-                spechStatusUpdated.SetResult(true);
-            }
-        });
+        hubConnection.On<Guid, string, int?, string?>(Shared.AudioStatusUpdated, statusCapture.OnStatusUpdatedAsync);
 
         _output.WriteLine("Starting hub connection...");
 
@@ -92,34 +70,22 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         _output.WriteLine("Hub connection started");
 
         // Act
-        var response = await _client.PostAsync("/api/speech", GetFormData(ttsApi));
-        response.EnsureSuccessStatusCode();
-        var responseString = await response.Content.ReadAsStringAsync();
-        Assert.True(Guid.TryParse(responseString.Trim('"'), out var respStringFileId), "Response string file ID is not a valid guid");
-        expectedFileId.SetResult(respStringFileId);
-
-        var completedTask = await Task.WhenAny(spechStatusUpdated.Task, Task.Delay(TimeSpan.FromSeconds(20)));
-        Assert.True(completedTask == spechStatusUpdated.Task, "Timed out to update speech status");
-
-        var downloadResp = await _client.GetAsync($"/api/audio/download/{respStringFileId}");
-        downloadResp.EnsureSuccessStatusCode();
-        var downloadBytes = await downloadResp.Content.ReadAsByteArrayAsync();
+        var responseFileId = await SubmitSpeechAsync(ttsApi, statusCapture);
+        var downloadBytes = await DownloadSpeechAsync(responseFileId);
 
         //Assert 
 
-        Assert.Equal(Status.Completed.ToString(), status);
-        Assert.Equal(respStringFileId, fileId);
-        Assert.Null(errorMessage);
-        Assert.NotEmpty(progressReports);
-
-        Assert.Equal(AudioMpeg, downloadResp.Content.Headers.ContentType?.MediaType);
+        AssertCompletedSpeech(statusCapture, responseFileId);
         Assert.NotEmpty(downloadBytes);
 
         // Cleanup
         await hubConnection.DisposeAsync();
     }
 
-    private static HubConnection BuildHubConnection(HttpClient client, TestWebApplicationFactory<Program> factory, string? token)
+    private static HubConnection BuildHubConnection(
+        HttpClient client,
+        TestWebApplicationFactory<Program> factory,
+        string? token)
     {
         return new HubConnectionBuilder()
             .WithUrl($"{client.BaseAddress!.OriginalString}{Shared.AudioHubEndpoint}", options =>
@@ -131,6 +97,46 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
                 options.HttpMessageHandlerFactory = _ => factory.Server.CreateHandler();
             })
             .Build();
+    }
+
+    private async Task<Guid> SubmitSpeechAsync(string ttsApi, SpeechStatusCapture statusCapture)
+    {
+        var response = await _client.PostAsync("/api/speech", GetFormData(ttsApi));
+        response.EnsureSuccessStatusCode();
+
+        var responseString = await response.Content.ReadAsStringAsync();
+
+        Assert.True(
+            Guid.TryParse(responseString.Trim('"'), out var responseFileId),
+            "Response string file ID is not a valid guid");
+
+        statusCapture.ExpectFileId(responseFileId);
+
+        var completedTask = await Task.WhenAny(
+            statusCapture.StatusUpdated,
+            Task.Delay(TimeSpan.FromSeconds(20)));
+
+        Assert.True(completedTask == statusCapture.StatusUpdated, "Timed out to update speech status");
+
+        return responseFileId;
+    }
+
+    private async Task<byte[]> DownloadSpeechAsync(Guid fileId)
+    {
+        var downloadResp = await _client.GetAsync($"/api/audio/download/{fileId}");
+        downloadResp.EnsureSuccessStatusCode();
+
+        Assert.Equal(AudioMpeg, downloadResp.Content.Headers.ContentType?.MediaType);
+
+        return await downloadResp.Content.ReadAsByteArrayAsync();
+    }
+
+    private static void AssertCompletedSpeech(SpeechStatusCapture statusCapture, Guid responseFileId)
+    {
+        Assert.Equal(Status.Completed.ToString(), statusCapture.Status);
+        Assert.Equal(responseFileId, statusCapture.FileId);
+        Assert.Null(statusCapture.ErrorMessage);
+        Assert.NotEmpty(statusCapture.ProgressReports);
     }
 
     private static MultipartFormDataContent GetFormData(string ttsApi)
@@ -149,22 +155,58 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         {
             { new StringContent(speechRequest.TtsApi), nameof(speechRequest.TtsApi) },
             { new StringContent(speechRequest.LanguageCode!), nameof(speechRequest.LanguageCode) },
-            { new StringContent(speechRequest.TtsRequestOptions.Model ?? string.Empty), $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Model)}" },
-            { new StringContent(voice.Name), $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Voice)}.{nameof(voice.Name)}" },
-            { new StringContent(voice.ProviderVoiceId), $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Voice)}.{nameof(voice.ProviderVoiceId)}" },
-            { new StringContent(((int)voice.QualityTier).ToString(CultureInfo.InvariantCulture)), $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Voice)}.{nameof(voice.QualityTier)}" },
-            { new StringContent(speechRequest.TtsRequestOptions.Speed.ToString(CultureInfo.InvariantCulture)), $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Speed)}" },
-            { new StringContent(speechRequest.TtsRequestOptions.ResponseFormat.ToString()), $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.ResponseFormat)}" },
             { fileContent, nameof(speechRequest.File), speechRequest.File.FileName }
         };
 
-        if (voice.Language is not null)
-        {
-            formData.Add(new StringContent(voice.Language.Name), $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Voice)}.{nameof(voice.Language)}.{nameof(voice.Language.Name)}");
-            formData.Add(new StringContent(voice.Language.LanguageCode), $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Voice)}.{nameof(voice.Language)}.{nameof(voice.Language.LanguageCode)}");
-        }
+        AddTtsRequestOptions(formData, speechRequest, voice);
+        AddVoiceLanguage(formData, speechRequest, voice);
 
         return formData;
+    }
+
+    private static void AddTtsRequestOptions(
+        MultipartFormDataContent formData,
+        TtsRequest speechRequest,
+        Voice voice)
+    {
+        formData.Add(
+            new StringContent(speechRequest.TtsRequestOptions.Model ?? string.Empty),
+            $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Model)}");
+        formData.Add(
+            new StringContent(voice.Name),
+            $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Voice)}.{nameof(voice.Name)}");
+        formData.Add(
+            new StringContent(voice.ProviderVoiceId),
+            $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Voice)}." +
+            $"{nameof(voice.ProviderVoiceId)}");
+        formData.Add(
+            new StringContent(((int)voice.QualityTier).ToString(CultureInfo.InvariantCulture)),
+            $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Voice)}." +
+            $"{nameof(voice.QualityTier)}");
+        formData.Add(
+            new StringContent(speechRequest.TtsRequestOptions.Speed.ToString(CultureInfo.InvariantCulture)),
+            $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Speed)}");
+        formData.Add(
+            new StringContent(speechRequest.TtsRequestOptions.ResponseFormat.ToString()),
+            $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.ResponseFormat)}");
+    }
+
+    private static void AddVoiceLanguage(
+        MultipartFormDataContent formData,
+        TtsRequest speechRequest,
+        Voice voice)
+    {
+        if (voice.Language is not null)
+        {
+            formData.Add(
+                new StringContent(voice.Language.Name),
+                $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Voice)}." +
+                $"{nameof(voice.Language)}.{nameof(voice.Language.Name)}");
+            formData.Add(
+                new StringContent(voice.Language.LanguageCode),
+                $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Voice)}." +
+                $"{nameof(voice.Language)}.{nameof(voice.Language.LanguageCode)}");
+        }
     }
 
     private async Task<string> Authenticate()
@@ -185,5 +227,48 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
             new AuthenticationHeaderValue("Bearer", token);
 
         return token;
+    }
+
+    private sealed class SpeechStatusCapture
+    {
+        private readonly TaskCompletionSource<bool> _statusUpdated = new();
+        private readonly TaskCompletionSource<Guid> _expectedFileId = new();
+
+        public Task<bool> StatusUpdated => _statusUpdated.Task;
+        public string Status { get; private set; } = string.Empty;
+        public string? ErrorMessage { get; private set; }
+        public Guid? FileId { get; private set; }
+        public List<int?> ProgressReports { get; } = [];
+
+        public void ExpectFileId(Guid fileId)
+        {
+            _expectedFileId.SetResult(fileId);
+        }
+
+        public async Task OnStatusUpdatedAsync(
+            Guid fileId,
+            string status,
+            int? progressPercentage,
+            string? errorMessage)
+        {
+            if (fileId != await _expectedFileId.Task)
+            {
+                return;
+            }
+
+            Status = status;
+            ErrorMessage = errorMessage;
+            FileId = fileId;
+
+            if (progressPercentage.HasValue)
+            {
+                ProgressReports.Add(progressPercentage);
+            }
+
+            if (status == TextToSpeech.Core.Enums.Status.Completed.ToString())
+            {
+                _statusUpdated.SetResult(true);
+            }
+        }
     }
 }

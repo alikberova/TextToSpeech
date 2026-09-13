@@ -137,7 +137,10 @@ static void ConfigureLogging(WebApplicationBuilder builder)
 
         loggerConfig.WriteTo.Elasticsearch([new Uri(elasticConfig.Url)], opts =>
         {
-            opts.DataStream = new DataStreamName("logs", AppConstants.AppName.ToLower(), HostingEnvironment.Current.ToLower());
+            opts.DataStream = new DataStreamName(
+                "logs",
+                AppConstants.AppName.ToLower(),
+                HostingEnvironment.Current.ToLower());
             opts.BootstrapMethod = BootstrapMethod.Failure;
         }, transport =>
         {

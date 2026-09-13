@@ -42,7 +42,12 @@ public sealed class ElevenLabsServiceTests
     {
         var service = CreateService();
 
-        var result = await service.RequestSpeechChunksAsync([], Guid.NewGuid(), TestData.TtsRequestOptions, Mocks.ProgressCallback, CancellationToken.None);
+        var result = await service.RequestSpeechChunksAsync(
+            [],
+            Guid.NewGuid(),
+            TestData.TtsRequestOptions,
+            Mocks.ProgressCallback,
+            CancellationToken.None);
 
         Assert.Empty(result);
     }
@@ -56,7 +61,12 @@ public sealed class ElevenLabsServiceTests
         var service = CreateService();
 
         await Assert.ThrowsAsync<TaskCanceledException>(() =>
-            service.RequestSpeechChunksAsync(["text"], Guid.NewGuid(), TestData.TtsRequestOptions, Mocks.ProgressCallback, cts.Token));
+            service.RequestSpeechChunksAsync(
+                ["text"],
+                Guid.NewGuid(),
+                TestData.TtsRequestOptions,
+                Mocks.ProgressCallback,
+                cts.Token));
     }
 
     [Fact]
@@ -76,7 +86,9 @@ public sealed class ElevenLabsServiceTests
         Assert.All(result, bytes => Assert.False(bytes.IsEmpty));
 
         progressContext.TrackerMock.Verify(p => p.InitializeFile(fileId, textChunks.Count), Times.Once);
-        progressContext.TrackerMock.Verify(p => p.UpdateProgress(fileId, progressContext.Progress, It.IsAny<int>(), 100), Times.Exactly(textChunks.Count));
+        progressContext.TrackerMock.Verify(
+            p => p.UpdateProgress(fileId, progressContext.Progress, It.IsAny<int>(), 100),
+            Times.Exactly(textChunks.Count));
     }
 
     [Fact]
