@@ -8,7 +8,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "format:check": "prettier --check ."
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "cd .. && husky TextToSpeech.Web/.husky"
   },
   "prettier": {
     "printWidth": 120,
@@ -46,6 +48,7 @@
     "@vitest/coverage-v8": "^4.1.11",
     "angular-eslint": "21.2.0",
     "eslint": "^9.39.2",
+    "husky": "9.1.7",
     "jsdom": "^28.0.0",
     "knip": "^5.86.0",
     "prettier": "3.9.6",
