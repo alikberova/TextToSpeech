@@ -11,8 +11,8 @@ indent_size = 4
 tab_width = 4
 max_line_length = 120
 
-# C# blocks use braces on separate lines. Object/collection/anonymous initializers are intentionally excluded.
-csharp_new_line_before_open_brace = types, methods, properties, accessors, events, indexers, control_blocks, anonymous_methods, lambdas, local_functions
+# C# opening braces use separate lines.
+csharp_new_line_before_open_brace = all
 csharp_prefer_braces = true:error
 dotnet_style_allow_multiple_blank_lines_experimental = false:error
 
@@ -55,6 +55,15 @@ dotnet_diagnostic.MEN005.severity = warning
 
 # Existing repository exception.
 dotnet_diagnostic.CA1873.severity = none
+
+# EF migrations are generated code; exclude them from style and size analysis.
+[**/Migrations/*.cs]
+generated_code = true
+dotnet_diagnostic.IDE0011.severity = none
+dotnet_diagnostic.IDE0055.severity = none
+dotnet_diagnostic.MEN002.severity = none
+dotnet_diagnostic.MEN003.severity = none
+dotnet_diagnostic.MEN005.severity = none
 
 [*.{ts,js,html,css,scss}]
 indent_size = 2
