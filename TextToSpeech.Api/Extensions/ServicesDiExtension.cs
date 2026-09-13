@@ -17,6 +17,7 @@ using TextToSpeech.Infra.Services.Ai;
 using TextToSpeech.Infra.Services.Common;
 using TextToSpeech.Infra.Services.FileProcessing;
 using TextToSpeech.Infra.Stubs;
+using TextToSpeech.Infra.SignalR;
 
 namespace TextToSpeech.Api.Extensions;
 
@@ -27,7 +28,13 @@ internal static class ServicesDiExtension
         services.AddTransient<IDbInitializer, DbInitializer>();
 
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
+
         services.AddScoped<ISpeechService, SpeechService>();
+        services.AddScoped<ISubmitSpeechGeneration, SubmitSpeechGeneration>();
+        services.AddScoped<IExecuteSpeechGeneration, ExecuteSpeechGeneration>();
+        services.AddSingleton<ISpeechGenerationDispatcher, QueuedSpeechGenerationDispatcher>();
+        services.AddScoped<ISpeechGenerationNotifications, SpeechGenerationNotifications>();
+
         services.AddScoped<IMetaDataService, MetaDataService>();
         services.AddScoped<ITtsServiceFactory, TtsServiceFactory>();
         services.AddScoped<ISmtpClient, SmtpClient>();
@@ -41,7 +48,7 @@ internal static class ServicesDiExtension
         services.AddSingleton<IFileProcessor, TextFileProcessor>();
         services.AddSingleton<IFileProcessor, PdfProcessor>();
         services.AddSingleton<IFileProcessor, EpubProcessor>();
-        services.AddSingleton<ITaskManager, TaskManager>();
+        services.AddSingleton<ICancellationRegistry, CancellationRegistry>();
         services.AddSingleton<IProgressTracker, ProgressTracker>();
         services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 

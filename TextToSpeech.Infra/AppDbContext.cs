@@ -28,5 +28,8 @@ public sealed class AppDbContext : DbContext
 
         modelBuilder.Entity<AudioFile>()
             .HasIndex(x => x.OwnerId);
+
+        modelBuilder.Entity<AudioFile>()
+            .HasIndex(x => new { x.Hash, x.OwnerId, x.TtsApiId, x.Status });
     }
 }

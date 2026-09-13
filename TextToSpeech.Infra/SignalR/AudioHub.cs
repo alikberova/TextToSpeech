@@ -6,18 +6,22 @@ using TextToSpeech.Infra.Interfaces;
 namespace TextToSpeech.Infra.SignalR;
 
 [Authorize]
-public sealed class AudioHub(ITaskManager _taskManager) : Hub
+public sealed class AudioHub(ICancellationRegistry _taskManager) : Hub
 {
     public async Task CancelProcessing(Guid audioFileId)
     {
-        await _taskManager.TryCancelTask(audioFileId);
+        var ownerId = GetOwnerId();
+        if (ownerId is not null)
+        {
+            await _taskManager.TryCancelTask(audioFileId, ownerId);
+        }
     }
 
     public override async Task OnConnectedAsync()
     {
-        var ownerId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var ownerId = GetOwnerId();
 
-        if (string.IsNullOrWhiteSpace(ownerId))
+        if (ownerId is null)
         {
             Context.Abort();
             return;
@@ -30,13 +34,19 @@ public sealed class AudioHub(ITaskManager _taskManager) : Hub
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        var ownerId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var ownerId = GetOwnerId();
 
-        if (!string.IsNullOrWhiteSpace(ownerId))
+        if (ownerId is not null)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, ownerId);
         }
 
         await base.OnDisconnectedAsync(exception);
+    }
+
+    private string? GetOwnerId()
+    {
+        var ownerId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return string.IsNullOrWhiteSpace(ownerId) ? null : ownerId;
     }
 }

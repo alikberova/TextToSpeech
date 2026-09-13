@@ -10,12 +10,15 @@ namespace TextToSpeech.Api.Controllers;
 public sealed class SpeechController : ControllerBase
 {
     private readonly ISpeechService _speechService;
+    private readonly ISubmitSpeechGeneration _submitSpeechGeneration;
     private readonly IOwnerContext _ownerContext;
 
-    public SpeechController(ISpeechService speechService, IOwnerContext ownerContext)
+    public SpeechController(ISpeechService speechService, IOwnerContext ownerContext,
+        ISubmitSpeechGeneration submitSpeechGeneration)
     {
         _speechService = speechService;
         _ownerContext = ownerContext;
+        _submitSpeechGeneration = submitSpeechGeneration;
     }
 
     [HttpPost]
@@ -28,14 +31,15 @@ public sealed class SpeechController : ControllerBase
 
         using var ms = new MemoryStream();
 
-        await request.File.CopyToAsync(ms);
+        await request.File.CopyToAsync(ms, HttpContext.RequestAborted);
 
-        var fileId = await _speechService.GetOrInitiateSpeech(
+        var fileId = await _submitSpeechGeneration.SubmitAsync(
             request.TtsRequestOptions,
             ms.ToArray(),
             request.File.FileName,
             request.TtsApi,
-            _ownerContext.GetOwnerId());
+            _ownerContext.GetOwnerId(),
+            HttpContext.RequestAborted);
 
         return Ok(fileId);
     }

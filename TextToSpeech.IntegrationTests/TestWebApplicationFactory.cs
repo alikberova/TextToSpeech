@@ -17,7 +17,7 @@ public class TestWebApplicationFactory<TProgram>
     public static string CacheConnectionEnv => $"ConnectionStrings__{ConnectionStrings.CacheConnection}";
     public static string DbConnectionEnv => $"ConnectionStrings__{ConnectionStrings.DbConnection}";
 
-    public HttpClient HttpClient { get; private set; } = null!;
+    public HttpClient? HttpClient { get; private set; }
 
     public TestWebApplicationFactory()
     {
@@ -43,7 +43,7 @@ public class TestWebApplicationFactory<TProgram>
         await _cacheContainer.DisposeAsync();
         await _dbContainer.DisposeAsync();
 
-        HttpClient.Dispose();
+        HttpClient?.Dispose();
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
