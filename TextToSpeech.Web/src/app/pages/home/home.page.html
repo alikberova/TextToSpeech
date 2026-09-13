@@ -10,11 +10,21 @@
   </div>
 }
 
-<form class="tts-form" (submit)="$event.preventDefault(); submit()" #formEl="ngForm" aria-labelledby="formTitle" data-testid="ttsForm">
+<form
+  class="tts-form"
+  (submit)="$event.preventDefault(); submit()"
+  #formEl="ngForm"
+  aria-labelledby="formTitle"
+  data-testid="ttsForm"
+>
   <h3 id="formTitle" class="sr-only">{{ 'home.form.title' | translate }}</h3>
 
   <!-- Provider -->
-  <mat-form-field appearance="outline" class="field" [attr.aria-invalid]="(providerCtrl.touched || submitAttempt() || sampleAttempt()) && !provider() && 'true'">
+  <mat-form-field
+    appearance="outline"
+    class="field"
+    [attr.aria-invalid]="(providerCtrl.touched || submitAttempt() || sampleAttempt()) && !provider() && 'true'"
+  >
     <mat-label>{{ 'home.provider.label' | translate }}</mat-label>
     <mat-select
       #providerCtrl="ngModel"
@@ -43,32 +53,40 @@
 
   <!-- Model (conditional) -->
   @if (requiresModel()) {
-  <mat-form-field appearance="outline" class="field" [attr.aria-invalid]="(modelCtrl.touched || submitAttempt()) && requiresModel() && !model() && 'true'">
-    <mat-label>{{ 'home.model.label' | translate }}</mat-label>
-    <mat-select
-      #modelCtrl="ngModel"
-      #modelEl
-      [ngModel]="model()"
-      (ngModelChange)="model.set($event)"
-      name="model"
-      required
-      aria-describedby="modelHelp"
+    <mat-form-field
+      appearance="outline"
+      class="field"
+      [attr.aria-invalid]="(modelCtrl.touched || submitAttempt()) && requiresModel() && !model() && 'true'"
     >
-      <mat-option [value]="''" disabled>{{ 'home.model.placeholder' | translate }}</mat-option>
-      @for (m of modelsForProvider(); track m) {
-        <mat-option [value]="m">{{ m }}</mat-option>
+      <mat-label>{{ 'home.model.label' | translate }}</mat-label>
+      <mat-select
+        #modelCtrl="ngModel"
+        #modelEl
+        [ngModel]="model()"
+        (ngModelChange)="model.set($event)"
+        name="model"
+        required
+        aria-describedby="modelHelp"
+      >
+        <mat-option [value]="''" disabled>{{ 'home.model.placeholder' | translate }}</mat-option>
+        @for (m of modelsForProvider(); track m) {
+          <mat-option [value]="m">{{ m }}</mat-option>
+        }
+      </mat-select>
+      <mat-hint id="modelHelp">{{ 'home.model.help' | translate }}</mat-hint>
+      @if ((modelCtrl.touched || submitAttempt()) && requiresModel() && !model()) {
+        <mat-error>{{ 'home.errors.required' | translate }}</mat-error>
       }
-    </mat-select>
-    <mat-hint id="modelHelp">{{ 'home.model.help' | translate }}</mat-hint>
-    @if ((modelCtrl.touched || submitAttempt()) && requiresModel() && !model()) {
-      <mat-error>{{ 'home.errors.required' | translate }}</mat-error>
-    }
-  </mat-form-field>
+    </mat-form-field>
   }
-  
+
   <!-- Language (Narakeet only) -->
   @if (provider() === 'narakeet') {
-    <mat-form-field appearance="outline" class="field" [attr.aria-invalid]="(languageCtrl.touched || submitAttempt() || sampleAttempt()) && !language() && 'true'">
+    <mat-form-field
+      appearance="outline"
+      class="field"
+      [attr.aria-invalid]="(languageCtrl.touched || submitAttempt() || sampleAttempt()) && !language() && 'true'"
+    >
       <mat-label>{{ 'home.language.label' | translate }}</mat-label>
       <mat-select
         #languageCtrl="ngModel"
@@ -88,9 +106,13 @@
       }
     </mat-form-field>
   }
-  
+
   <!-- Voice -->
-  <mat-form-field appearance="outline" class="field" [attr.aria-invalid]="(voiceCtrl.touched || submitAttempt() || sampleAttempt()) && !voice() && 'true'">
+  <mat-form-field
+    appearance="outline"
+    class="field"
+    [attr.aria-invalid]="(voiceCtrl.touched || submitAttempt() || sampleAttempt()) && !voice() && 'true'"
+  >
     <mat-label>{{ 'home.voice.label' | translate }}</mat-label>
     <mat-select
       #voiceCtrl="ngModel"
@@ -121,12 +143,13 @@
       [ngModel]="responseFormat()"
       (ngModelChange)="responseFormat.set($event)"
       name="responseFormat"
-      aria-describedby="formatHelp">
+      aria-describedby="formatHelp"
+    >
       @for (format of availableResponseFormats(); track format) {
-      <mat-chip-option [value]="format">
-        {{ format | uppercase }}
-      </mat-chip-option>
-    }
+        <mat-chip-option [value]="format">
+          {{ format | uppercase }}
+        </mat-chip-option>
+      }
     </mat-chip-listbox>
     <mat-hint id="formatHelp">{{ 'home.format.help' | translate }}</mat-hint>
   </section>
@@ -152,7 +175,7 @@
         <strong>{{ 'home.file.drop' | translate }}</strong>
         <span>{{ 'home.file.or' | translate }}</span>
         <span class="link">{{ 'home.file.browse' | translate }}</span>
-        <small id="fileHelp">{{ 'home.file.help' | translate:{ types: acceptableTypesText() } }}</small>
+        <small id="fileHelp">{{ 'home.file.help' | translate: { types: acceptableTypesText() } }}</small>
       </div>
     </button>
 
@@ -171,7 +194,9 @@
       <div class="file-info">
         <mat-icon aria-hidden="true">description</mat-icon>
         <span class="name">{{ f.name }}</span>
-        <button type="button" mat-button color="primary" (click)="removeFile()">{{ 'home.file.remove' | translate }}</button>
+        <button type="button" mat-button color="primary" (click)="removeFile()">
+          {{ 'home.file.remove' | translate }}
+        </button>
       </div>
     }
     @if ((fileTouched() || submitAttempt()) && !file()) {
@@ -188,7 +213,7 @@
     <mat-slider min="0.7" max="1.2" step="0.1" [displayWith]="formatSpeed">
       <input matSliderThumb [id]="speedInputId" [value]="speed()" (valueChange)="speed.set($event)" />
     </mat-slider>
-    <div class="hint">{{ 'home.speed.help' | translate:{ min: '0.7', max: '1.2', value: speed().toFixed(1) } }}</div>
+    <div class="hint">{{ 'home.speed.help' | translate: { min: '0.7', max: '1.2', value: speed().toFixed(1) } }}</div>
   </div>
 
   <!-- Sample text and play -->
@@ -202,15 +227,19 @@
       data-testid="sampleTextArea"
       (ngModelChange)="onSampleTextInput($event)"
       [ngModelOptions]="{ standalone: true }"
-      placeholder="{{ 'home.sample.placeholder' | translate }}">
+      placeholder="{{ 'home.sample.placeholder' | translate }}"
+    >
     </textarea>
     <button
       mat-icon-button
       type="button"
       class="sample-play-overlay"
-      [attr.aria-label]="sampleStatus() === 'playing' ? ('home.sample.pause' | translate) : ('home.sample.play' | translate)"
+      [attr.aria-label]="
+        sampleStatus() === 'playing' ? ('home.sample.pause' | translate) : ('home.sample.play' | translate)
+      "
       (click)="playOrToggleSample()"
-      data-testid="samplePlayButton">
+      data-testid="samplePlayButton"
+    >
       <mat-icon>
         {{ sampleIconName }}
       </mat-icon>
@@ -220,9 +249,23 @@
 
   <!-- Actions -->
   <div class="actions">
-    <button type="submit" mat-raised-button color="primary" data-testid="submitBtn">{{ 'home.actions.submit' | translate }}</button>
-    <button type="button" mat-stroked-button color="primary" (click)="download()" [disabled]="status() !== 'Completed'" [class.hidden]="status() !== 'Completed'" data-testid="downloadBtn">{{ 'home.actions.download' | translate }}</button>
-    <button type="button" mat-button (click)="clear()" data-testid="clearBtn">{{ 'home.actions.clear' | translate }}</button>
+    <button type="submit" mat-raised-button color="primary" data-testid="submitBtn">
+      {{ 'home.actions.submit' | translate }}
+    </button>
+    <button
+      type="button"
+      mat-stroked-button
+      color="primary"
+      (click)="download()"
+      [disabled]="status() !== 'Completed'"
+      [class.hidden]="status() !== 'Completed'"
+      data-testid="downloadBtn"
+    >
+      {{ 'home.actions.download' | translate }}
+    </button>
+    <button type="button" mat-button (click)="clear()" data-testid="clearBtn">
+      {{ 'home.actions.clear' | translate }}
+    </button>
   </div>
 
   <!-- Progress -->
@@ -233,11 +276,15 @@
         <div class="status-copy">
           <div class="primary">
             {{
-              status() === 'Created' ? ('home.progress.created' | translate) :
-              status() === 'Processing' ? ('home.progress.processing' | translate) :
-              status() === 'Completed' ? ('home.progress.completed' | translate) :
-              status() === 'Failed' ? ('home.progress.failed' | translate) :
-              ('home.progress.canceled' | translate)
+              status() === 'Created'
+                ? ('home.progress.created' | translate)
+                : status() === 'Processing'
+                  ? ('home.progress.processing' | translate)
+                  : status() === 'Completed'
+                    ? ('home.progress.completed' | translate)
+                    : status() === 'Failed'
+                      ? ('home.progress.failed' | translate)
+                      : ('home.progress.canceled' | translate)
             }}
           </div>
           @if (status() === 'Processing') {
@@ -245,7 +292,14 @@
           }
         </div>
         @if (status() === 'Processing' || status() === 'Created') {
-          <button type="button" mat-stroked-button color="primary" class="cancel-btn" (click)="cancel()" [disabled]="!canCancel()">
+          <button
+            type="button"
+            mat-stroked-button
+            color="primary"
+            class="cancel-btn"
+            (click)="cancel()"
+            [disabled]="!canCancel()"
+          >
             {{ 'home.actions.cancel' | translate }}
           </button>
         }
@@ -255,5 +309,4 @@
       }
     </section>
   }
-
 </form>

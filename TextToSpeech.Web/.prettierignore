@@ -1,0 +1,5 @@
+**/*.ts
+narakeet-voices.json
+coverage/
+dist/
+.angular/
