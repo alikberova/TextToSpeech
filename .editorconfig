@@ -2,6 +2,7 @@ root = true
 
 [*]
 charset = utf-8
+end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 indent_style = space
@@ -48,10 +49,10 @@ menees_analyzers.max_method_lines = 50
 menees_analyzers.max_file_lines = 300
 menees_analyzers.allow_long_uri_lines = true
 
-# Existing violations are warnings in this PR. A follow-up cleanup PR will remove them before promoting these to errors.
-dotnet_diagnostic.MEN002.severity = warning
-dotnet_diagnostic.MEN003.severity = warning
-dotnet_diagnostic.MEN005.severity = warning
+# Enforce repository size limits.
+dotnet_diagnostic.MEN002.severity = error
+dotnet_diagnostic.MEN003.severity = error
+dotnet_diagnostic.MEN005.severity = error
 
 # Existing repository exception.
 dotnet_diagnostic.CA1873.severity = none
