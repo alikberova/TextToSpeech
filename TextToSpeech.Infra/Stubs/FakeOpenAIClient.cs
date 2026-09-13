@@ -16,7 +16,8 @@ public static class FakeOpenAIClient
             BaseAddress = new Uri("https://fake.openai.local/")
         };
 
-        return new OpenAIClient(new ApiKeyCredential("test-key"),
+        return new OpenAIClient(
+            new ApiKeyCredential("test-key"),
             new OpenAIClientOptions {
                 Endpoint = httpClient.BaseAddress,
                 Transport = new HttpClientPipelineTransport(httpClient)
@@ -26,7 +27,9 @@ public static class FakeOpenAIClient
 
 sealed class FakeOpenAiHttpHandler : HttpMessageHandler
 {
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
     {
         if (request.Method == HttpMethod.Post)
         {
@@ -42,4 +45,3 @@ sealed class FakeOpenAiHttpHandler : HttpMessageHandler
         return new HttpResponseMessage(HttpStatusCode.NotFound);
     }
 }
-
