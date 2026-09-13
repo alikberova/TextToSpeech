@@ -38,6 +38,7 @@ jobs:
         OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
         ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
         EMAIL_FROM: ${{ secrets.EMAILCONFIG__EMAILFROM }}
         EMAIL_PASS: ${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}
         EMAIL_TO: ${{ secrets.EMAILCONFIG__EMAILTO }}
@@ -55,6 +56,7 @@ jobs:
         echo "POSTGRES_USER=${{ vars.POSTGRES_USER }}" >> .env
         echo "POSTGRES_DB=${{ vars.POSTGRES_DB }}" >> .env
         echo "POSTGRES_EXPOSED_PORT=${{ vars.POSTGRES_EXPOSED_PORT }}" >> .env
+        echo "RABBITMQ_USER=${{ vars.RABBITMQ_USER }}" >> .env
         echo "ELASTICSEARCHCONFIG__URL=${{ vars.ELASTICSEARCHCONFIG__URL }}" >> .env
         echo "JwtConfig__Issuer=${{ vars.JWTCONFIG__ISSUER }}" >> .env
         echo "JwtConfig__Audience=${{ vars.JWTCONFIG__AUDIENCE }}" >> .env
@@ -66,6 +68,7 @@ jobs:
         echo "OPENAI_API_KEY=$OPENAI_KEY" >> .env
         echo "ELEVENLABS_API_KEY=$ELEVENLABS_API_KEY" >> .env
         echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
+        echo "RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD" >> .env
         echo "EMAILCONFIG__EMAILFROM=$EMAIL_FROM" >> .env
         echo "EMAILCONFIG__EMAILFROMPASSWORD=$EMAIL_PASS" >> .env
         echo "EMAILCONFIG__EMAILTO=$EMAIL_TO" >> .env

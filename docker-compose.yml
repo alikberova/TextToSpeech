@@ -16,6 +16,11 @@ services:
       IsTestMode: ${IsTestMode}
       ASPNETCORE_URLS: "http://+:80"
       AppDataPath: /app/data
+      RabbitMq__RabbitMqConnection__HostName: rabbitmq
+      RabbitMq__RabbitMqConnection__Port: 5672
+      RabbitMq__RabbitMqConnection__UserName: ${RABBITMQ_USER}
+      RabbitMq__RabbitMqConnection__Password: ${RABBITMQ_PASSWORD}
+      RabbitMq__RabbitMqConnection__VirtualHost: /
     volumes:
       - artifacts-data:/app/data
     container_name: api
@@ -28,6 +33,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   web:
     build:
@@ -50,6 +57,26 @@ services:
     depends_on:
       api:
         condition: service_healthy
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
+    networks:
+      - proxy_elk
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
@@ -83,6 +110,7 @@ networks:
     name: elk
 
 volumes:
+  rabbitmq-data:
   artifacts-data:
   redis-data:
   db-data:
