@@ -12,8 +12,8 @@ using TextToSpeech.Infra;
 namespace TextToSpeech.Infra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260913145206_AddSpeechGenerationRequest")]
-    partial class AddSpeechGenerationRequest
+    [Migration("20260913160844_AddBackgroundJob")]
+    partial class AddBackgroundJob
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

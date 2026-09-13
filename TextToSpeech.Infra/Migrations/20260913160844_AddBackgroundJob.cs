@@ -12,8 +12,19 @@ namespace TextToSpeech.Infra.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "Data",
+                table: "AudioFiles");
+
             migrationBuilder.EnsureSchema(
                 name: "jobs");
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "ContentId",
+                table: "AudioFiles",
+                type: "uuid",
+                nullable: false,
+                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
             migrationBuilder.CreateTable(
                 name: "BackgroundJob",
@@ -122,6 +133,32 @@ namespace TextToSpeech.Infra.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "SpeechGenerationRequest",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    JobId = table.Column<Guid>(type: "uuid", nullable: false),
+                    OwnerId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    FileName = table.Column<string>(type: "text", nullable: false),
+                    Provider = table.Column<string>(type: "text", nullable: false),
+                    Version = table.Column<int>(type: "integer", nullable: false),
+                    SourceId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TextId = table.Column<Guid>(type: "uuid", nullable: false),
+                    OptionsJson = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SpeechGenerationRequest", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SpeechGenerationRequest_BackgroundJob_JobId",
+                        column: x => x.JobId,
+                        principalSchema: "jobs",
+                        principalTable: "BackgroundJob",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AudioFiles_Hash_OwnerId_TtsApiId_Status",
                 table: "AudioFiles",
@@ -164,6 +201,12 @@ namespace TextToSpeech.Infra.Migrations
                 schema: "jobs",
                 table: "OutboxMessage",
                 columns: new[] { "PublishedAt", "AvailableAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SpeechGenerationRequest_JobId",
+                table: "SpeechGenerationRequest",
+                column: "JobId",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -182,12 +225,26 @@ namespace TextToSpeech.Infra.Migrations
                 schema: "jobs");
 
             migrationBuilder.DropTable(
+                name: "SpeechGenerationRequest");
+
+            migrationBuilder.DropTable(
                 name: "BackgroundJob",
                 schema: "jobs");
 
             migrationBuilder.DropIndex(
                 name: "IX_AudioFiles_Hash_OwnerId_TtsApiId_Status",
                 table: "AudioFiles");
+
+            migrationBuilder.DropColumn(
+                name: "ContentId",
+                table: "AudioFiles");
+
+            migrationBuilder.AddColumn<byte[]>(
+                name: "Data",
+                table: "AudioFiles",
+                type: "bytea",
+                nullable: false,
+                defaultValue: new byte[0]);
         }
     }
 }
