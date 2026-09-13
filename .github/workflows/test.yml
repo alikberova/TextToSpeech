@@ -76,6 +76,11 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      # Ensure restore did not change committed NuGet lock files.
+      - name: Verify NuGet lock files
+        if: matrix.test_type == 'Unit'
+        run: git diff --exit-code -- '**/packages.lock.json'
+
       - name: Override Redis for test runner
         if: matrix.test_type == 'Selenium'
         run: echo "ConnectionStrings__RedisConnection=localhost:6379,allowAdmin=true" >> $GITHUB_ENV

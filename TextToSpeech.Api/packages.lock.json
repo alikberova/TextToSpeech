@@ -12,6 +12,12 @@
           "Elastic.Ingest.Elasticsearch.CommonSchema": "9.0.0"
         }
       },
+      "Menees.Analyzers": {
+        "type": "Direct",
+        "requested": "[4.0.1, )",
+        "resolved": "4.0.1",
+        "contentHash": "YTMPnmgtutjukIa2KDAiA1fqYQDHmZ0jTawgQNYANYJWQegXbdjKtr1WcsT38LbrI269X6JrmJUrdCG0zTQdNg=="
+      },
       "Microsoft.AspNetCore.Authentication.JwtBearer": {
         "type": "Direct",
         "requested": "[10.0.1, )",
