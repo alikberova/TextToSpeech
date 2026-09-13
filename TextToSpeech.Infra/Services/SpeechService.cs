@@ -15,8 +15,7 @@ using static TextToSpeech.Core.Enums;
 
 namespace TextToSpeech.Infra.Services;
 
-public sealed class SpeechService(
-    ITextProcessingService _textFileService,
+public sealed class SpeechService(ITextProcessingService _textFileService,
     ITtsServiceFactory _ttsServiceFactory,
     IFileProcessorFactory _fileProcessorFactory,
     IHubContext<AudioHub> _hubContext,
@@ -37,12 +36,8 @@ public sealed class SpeechService(
     /// <param name="request"></param>
     /// <returns>ID of the newly created audio file</returns>
     /// <exception cref="ArgumentException"></exception>
-    public async Task<Guid> GetOrInitiateSpeech(
-        TtsRequestOptions request,
-        byte[] fileBytes,
-        string fileName,
-        string ttsApi,
-        string ownerId)
+    public async Task<Guid> GetOrInitiateSpeech(TtsRequestOptions request, byte[] fileBytes, string fileName,
+        string ttsApi, string ownerId)
     {
         var fileText = await ExtractText(fileBytes, fileName);
 
@@ -75,14 +70,8 @@ public sealed class SpeechService(
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token);
             using var scope = _serviceScopeFactory.CreateScope();
             var speechService = scope.ServiceProvider.GetRequiredService<ISpeechService>();
-            await speechService.ProcessSpeechAsync(
-                request,
-                fileText,
-                fileName,
-                ttsApi,
-                audioFileId.Value,
-                ownerId,
-                linkedCts.Token);
+            await speechService.ProcessSpeechAsync(request, fileText, fileName, ttsApi,
+                audioFileId.Value, ownerId, linkedCts.Token);
         });
 
         _logger.LogInformation("Initializing TTS for {AudioFileId}", audioFileId);
@@ -90,8 +79,7 @@ public sealed class SpeechService(
         return audioFileId.Value;
     }
 
-    public async Task ProcessSpeechAsync(
-        TtsRequestOptions request,
+    public async Task ProcessSpeechAsync(TtsRequestOptions request,
         string fileText,
         string fileName,
         string ttsApi,
@@ -99,30 +87,28 @@ public sealed class SpeechService(
         string ownerId,
         CancellationToken cancellationToken)
     {
+        AudioFile? audioFile = null;
         var finalStatus = Status.Processing;
         string? errorMessage = null;
 
         try
         {
+            _logger.LogInformation("Processing speech for {FileId}", fileId);
+
+            audioFile = CreateFullAudioFile(request, fileText, fileName, ttsApi, fileId, ownerId);
             finalStatus = Status.Processing;
 
-            var result = await GenerateSpeechResult(
-                request,
-                fileText,
-                fileName,
-                ttsApi,
-                fileId,
-                ownerId,
-                () => finalStatus,
-                cancellationToken);
+            await UpdateAudioStatus(fileId, finalStatus.ToString(), ownerId);
+
+            var bytes = await GenerateSpeechBytes(request, fileText, fileName, ttsApi, fileId, ownerId,
+                () => finalStatus, cancellationToken);
 
             finalStatus = Status.Completed;
+            audioFile.Status = finalStatus;
+            audioFile.SetDataOnce(bytes);
 
-            result.AudioFile.Status = finalStatus;
-            result.AudioFile.SetDataOnce(result.Bytes);
-
-            await _redisCacheProvider.Set(result.AudioFile.Hash, result.AudioFile.Id);
-            await _audioFileRepository.Add(result.AudioFile);
+            await _redisCacheProvider.Set(audioFile.Hash, audioFile.Id);
+            await _audioFileRepository.Add(audioFile);
         }
         catch (OperationCanceledException)
         {
@@ -136,19 +122,12 @@ public sealed class SpeechService(
         }
         finally
         {
-            await UpdateAudioStatus(
-                fileId,
-                finalStatus.ToString(),
-                ownerId,
-                errorMessage: errorMessage,
-                delayMs: StatusUpdateDelayMs);
+            await UpdateAudioStatus(fileId, finalStatus.ToString(), ownerId,
+                errorMessage: errorMessage, delayMs: StatusUpdateDelayMs);
         }
     }
 
-    public async Task<MemoryStream> CreateSpeechSample(
-        TtsRequestOptions request,
-        string input,
-        string ttsApi,
+    public async Task<MemoryStream> CreateSpeechSample(TtsRequestOptions request, string input, string ttsApi,
         string ownerId)
     {
         var hash = AudioFileBuilder.GenerateHash(input, request, AudioType.Sample);
@@ -171,8 +150,7 @@ public sealed class SpeechService(
         var bytesCollection = await _ttsServiceFactory.Get(ttsApi)
             .RequestSpeechSample(input, request);
 
-        audioFile = AudioFileBuilder.Create(
-            bytesCollection.ToArray(),
+        audioFile = AudioFileBuilder.Create(bytesCollection.ToArray(),
             AudioType.Sample,
             input,
             request,
@@ -187,20 +165,15 @@ public sealed class SpeechService(
         return new MemoryStream(audioFile.Data);
     }
 
-    private async Task<(AudioFile AudioFile, byte[] Bytes)> GenerateSpeechResult(
+    private AudioFile CreateFullAudioFile(
         TtsRequestOptions request,
         string fileText,
         string fileName,
         string ttsApi,
         Guid fileId,
-        string ownerId,
-        Func<Status> getStatus,
-        CancellationToken cancellationToken)
+        string ownerId)
     {
-        _logger.LogInformation("Processing speech for {FileId}", fileId);
-
-        var audioFile = AudioFileBuilder.Create(
-            [],
+        return AudioFileBuilder.Create([],
             AudioType.Full,
             fileText,
             request,
@@ -208,20 +181,6 @@ public sealed class SpeechService(
             Shared.TtsApis.Single(kv => kv.Key.Equals(ttsApi, StringComparison.OrdinalIgnoreCase)).Value,
             fileName,
             fileId);
-
-        await UpdateAudioStatus(fileId, Status.Processing.ToString(), ownerId);
-
-        var bytes = await GenerateSpeechBytes(
-            request,
-            fileText,
-            fileName,
-            ttsApi,
-            fileId,
-            ownerId,
-            getStatus,
-            cancellationToken);
-
-        return (audioFile, bytes);
     }
 
     private async Task<byte[]> GenerateSpeechBytes(
@@ -241,13 +200,11 @@ public sealed class SpeechService(
         progress.ProgressChanged += async (_, report) =>
             await UpdateStatusAndProgress(fileId, report, getStatus(), ownerId);
 
-        var bytesCollection = await ttsService.RequestSpeechChunksAsync(
-            textChunks,
+        var bytesCollection = await ttsService.RequestSpeechChunksAsync(textChunks,
             fileId,
             request,
             progress,
             cancellationToken);
-
         var bytes = AudioFileService.ConcatenateRawAudioChunks(bytesCollection, request.ResponseFormat.ToString());
 
         if (request.ResponseFormat != SpeechResponseFormat.Pcm)
@@ -271,8 +228,7 @@ public sealed class SpeechService(
     /// <summary>
     /// Notify clients about the status update
     /// </summary>
-    private async Task UpdateAudioStatus(
-        Guid audioFileId,
+    private async Task UpdateAudioStatus(Guid audioFileId,
         string status,
         string ownerId,
         int? progressPercentage = null,
