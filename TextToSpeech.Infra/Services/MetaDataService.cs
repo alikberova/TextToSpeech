@@ -1,4 +1,4 @@
-﻿using TextToSpeech.Core;
+using TextToSpeech.Core;
 using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services;
@@ -22,12 +22,12 @@ public sealed class MetaDataService : IMetaDataService
 
             return await File.ReadAllBytesAsync(tempPath);
         }
-		finally
-		{
+        finally
+        {
             if (File.Exists(tempPath))
             {
                 File.Delete(tempPath);
             }
-		}
+        }
     }
 }
