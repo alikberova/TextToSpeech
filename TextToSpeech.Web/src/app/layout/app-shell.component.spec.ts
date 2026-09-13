@@ -61,7 +61,7 @@ describe('AppShellComponent layout', () => {
     const activeLinks = links.filter((a) => a.classList.contains('active'));
 
     // Expect exactly one active link and it should be the Feedback item
-    expect(activeLinks.length).toBe(1);
+    expect(activeLinks).toHaveLength(1);
     expect(activeLinks[0].textContent?.toLowerCase()).toContain('feedback');
 
     // Navigate to root and assert only Generate is active
@@ -70,7 +70,7 @@ describe('AppShellComponent layout', () => {
 
     const linksAfterRoot = Array.from(host.querySelectorAll('nav.nav a')) as HTMLAnchorElement[];
     const activeAfterRoot = linksAfterRoot.filter((a) => a.classList.contains('active'));
-    expect(activeAfterRoot.length).toBe(1);
+    expect(activeAfterRoot).toHaveLength(1);
     expect(activeAfterRoot[0].textContent?.toLowerCase()).toContain('generate');
   });
 });
