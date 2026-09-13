@@ -1,4 +1,50 @@
-﻿[*.cs]
+root = true
 
-# CA1873: Avoid potentially expensive logging
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+[*.cs]
+indent_size = 4
+tab_width = 4
+max_line_length = 120
+
+# C# blocks use braces on separate lines. Object/collection/anonymous initializers are intentionally excluded.
+csharp_new_line_before_open_brace = types, methods, properties, accessors, events, indexers, control_blocks, anonymous_methods, lambdas, local_functions
+csharp_prefer_braces = true:error
+dotnet_style_allow_multiple_blank_lines_experimental = false:error
+
+# Enforce formatting/code-style diagnostics during build.
+dotnet_diagnostic.IDE0011.severity = error
+dotnet_diagnostic.IDE0055.severity = error
+
+# Deterministic size limits enforced by Menees.Analyzers.
+menees_analyzers.tab_size = 4
+menees_analyzers.max_line_columns = 120
+menees_analyzers.max_method_lines = 50
+menees_analyzers.max_file_lines = 300
+menees_analyzers.allow_long_uri_lines = true
+
+dotnet_diagnostic.MEN002.severity = error
+dotnet_diagnostic.MEN003.severity = error
+dotnet_diagnostic.MEN005.severity = error
+
+# Existing repository exception.
 dotnet_diagnostic.CA1873.severity = none
+
+[*.{ts,js,html,css,scss}]
+indent_size = 2
+
+[*.ts]
+quote_type = single
+ij_typescript_use_double_quotes = false
+
+[*.{json,jsonc,yml,yaml,xml,csproj,props,targets}]
+indent_size = 2
+
+[*.md]
+max_line_length = off
+trim_trailing_whitespace = false
