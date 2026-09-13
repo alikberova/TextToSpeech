@@ -13,7 +13,7 @@ export class I18nService {
 
   constructor() {
     const lang = this.current();
-    this.translate.addLangs(this.supported);
+    this.translate.addLangs([...this.supported]);
     this.translate.setDefaultLang('en');
     this.translate.use(lang);
   }
