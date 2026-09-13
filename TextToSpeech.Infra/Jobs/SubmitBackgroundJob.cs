@@ -63,14 +63,10 @@ public sealed class SubmitBackgroundJob(AppDbContext context) : ISubmitBackgroun
         ArgumentException.ThrowIfNullOrWhiteSpace(submission.OwnerId);
         ArgumentException.ThrowIfNullOrWhiteSpace(submission.IdempotencyKey);
         ArgumentException.ThrowIfNullOrWhiteSpace(submission.InputFingerprint);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(submission.OwnerId.Length, JobSubmission.MaxOwnerIdLength,
-            nameof(submission.OwnerId));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(submission.JobType.Length, JobSubmission.MaxJobTypeLength,
-            nameof(submission.JobType));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(
-            submission.IdempotencyKey.Length,
-            JobSubmission.MaxIdempotencyKeyLength,
-            nameof(submission.IdempotencyKey));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(submission.OwnerId.Length, JobSubmission.MaxOwnerIdLength);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(submission.JobType.Length, JobSubmission.MaxJobTypeLength);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(submission.IdempotencyKey.Length,
+            JobSubmission.MaxIdempotencyKeyLength);
         ArgumentOutOfRangeException.ThrowIfLessThan(submission.InputVersion, 1);
         ArgumentOutOfRangeException.ThrowIfLessThan(submission.MaxAttempts, 1);
     }

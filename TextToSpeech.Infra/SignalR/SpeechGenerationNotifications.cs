@@ -30,7 +30,7 @@ public sealed class SpeechGenerationNotifications(
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Failed to update status for {fileId}", fileId);
+            logger.LogWarning(ex, "Failed to update status for {FileId}", fileId);
         }
     }
 }

@@ -60,7 +60,8 @@ public sealed class QueuedSpeechGenerationDispatcher(
 
             try
             {
-                await RunExecutorAsync(fileId, ownerId, notifications, execution, progress, executionCancellation.Token);
+                await RunExecutorAsync(fileId, ownerId, notifications, execution, progress,
+                    executionCancellation.Token);
             }
             catch (OperationCanceledException) when (executionCancellation.IsCancellationRequested)
             {
@@ -69,7 +70,7 @@ public sealed class QueuedSpeechGenerationDispatcher(
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Speech generation failed for {fileId}", fileId);
+                logger.LogError(ex, "Speech generation failed for {FileId}", fileId);
                 await jobs.FailAsync(jobId, execution.AttemptId, GenerationFailedCode, null, CancellationToken.None);
             }
             finally
@@ -140,7 +141,7 @@ public sealed class QueuedSpeechGenerationDispatcher(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Could not renew speech job {jobId}", execution.JobId);
+            logger.LogError(ex, "Could not renew speech job {JobId}", execution.JobId);
             await executionCancellation.CancelAsync();
         }
     }

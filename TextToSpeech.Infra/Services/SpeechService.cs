@@ -1,4 +1,3 @@
-﻿using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Interfaces.Repositories;
