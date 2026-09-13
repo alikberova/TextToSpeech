@@ -19,6 +19,7 @@ public static class TestData
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed 11a47387-8d4a-4956-9a1e-352628301dab";
     public const string TtsFullRequest = "Test content for audio file full type";
     public const string AudioOwnerId = "guest:test";
+    public const string OpenAiSeedModel = "tts-1";
 
     public static AudioFile CreateAudioSampleAlloy()
     {
@@ -31,7 +32,7 @@ public static class TestData
                     Name = OpenAiVoices.Alloy.Name,
                     ProviderVoiceId = OpenAiVoices.Alloy.ProviderVoiceId
                 },
-                Model = "tts-1",
+                Model = OpenAiSeedModel,
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
             },
@@ -56,7 +57,7 @@ public static class TestData
                     Name = OpenAiVoices.Fable.Name,
                     ProviderVoiceId = OpenAiVoices.Fable.ProviderVoiceId
                 },
-                Model = "tts-1",
+                Model = OpenAiSeedModel,
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
             },

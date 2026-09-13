@@ -30,6 +30,7 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
         var page = CreatePage();
 
         page.SelectProvider(Shared.OpenAI.Name);
+        page.SelectModel(OpenAiSeedModel);
         await page.SelectVoice(OpenAiVoices.Alloy.Name);
 
         page.TypeSampleText();
@@ -41,6 +42,7 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
         Assert.True(page.IsIconVisible("play_circle"));
 
         page.SelectProvider(Shared.OpenAI.Name);
+        page.SelectModel(OpenAiSeedModel);
         await page.SelectVoice(OpenAiVoices.Fable.Name);
         page.UploadFile(sourcePath);
         page.ClickSubmit();

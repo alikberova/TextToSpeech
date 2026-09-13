@@ -22,6 +22,8 @@ public sealed class TtsFormPage
     private static By DownloadButtonBy => By.CssSelector($"button[data-testid='{DataTestId.DownloadBtn}']");
     private IWebElement ProviderSelect =>
         _driver.FindElement(By.CssSelector($"mat-select[name='{NameAttributes.Provider}']"));
+    private IWebElement ModelSelect =>
+        _driver.FindElement(By.CssSelector($"mat-select[name='{NameAttributes.Model}']"));
     private IWebElement? LanguageSelect =>
         _driver.FindElements(By.CssSelector($"mat-select[name='{NameAttributes.Language}']")).FirstOrDefault();
     private IWebElement VoiceSelect =>
@@ -83,6 +85,7 @@ public sealed class TtsFormPage
     }
 
     public void OpenProviderOptions() => ProviderSelect.Click();
+    public void OpenModelOptions() => ModelSelect.Click();
     public void OpenLanguageOptions() => LanguageSelect!.Click();
     public void OpenVoiceOptions() => VoiceSelect.Click();
 
@@ -96,6 +99,12 @@ public sealed class TtsFormPage
     {
         OpenProviderOptions();
         ClickDropdownOption(provider);
+    }
+
+    public void SelectModel(string model)
+    {
+        OpenModelOptions();
+        ClickDropdownOption(model);
     }
 
     public void SelectLanguage(string language)
