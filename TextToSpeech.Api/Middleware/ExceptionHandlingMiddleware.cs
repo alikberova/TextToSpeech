@@ -34,7 +34,7 @@ internal sealed class ExceptionHandlingMiddleware
                 }
             };
 
-            await context.Response.WriteAsJsonAsync(problem, context.RequestAborted);
+            await context.Response.WriteAsJsonAsync(problem, CancellationToken.None);
         }
     }
 }
