@@ -48,11 +48,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
         if (audioFileId is not null)
         {
-            _ = UpdateAudioStatus(
-                audioFileId.Value,
-                Status.Completed.ToString(),
-                ownerId,
-                delayMs: StatusUpdateDelayMs);
+            _ = UpdateAudioStatus(audioFileId.Value, Status.Completed.ToString(), ownerId, delayMs: StatusUpdateDelayMs);
             _logger.LogInformation("Found existing audio for {AudioFileId}", audioFileId);
 
             return audioFileId.Value;
@@ -90,20 +86,48 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         AudioFile? audioFile = null;
         var finalStatus = Status.Processing;
         string? errorMessage = null;
-
         try
         {
             _logger.LogInformation("Processing speech for {FileId}", fileId);
 
-            audioFile = CreateFullAudioFile(request, fileText, fileName, ttsApi, fileId, ownerId);
+            audioFile = AudioFileBuilder.Create([],
+                AudioType.Full,
+                fileText,
+                request,
+                ownerId,
+                Shared.TtsApis.Single(kv => kv.Key.Equals(ttsApi, StringComparison.OrdinalIgnoreCase)).Value,
+                fileName,
+                fileId
+            );
+
             finalStatus = Status.Processing;
 
             await UpdateAudioStatus(fileId, finalStatus.ToString(), ownerId);
 
-            var bytes = await GenerateSpeechBytes(request, fileText, fileName, ttsApi, fileId, ownerId,
-                () => finalStatus, cancellationToken);
+            var ttsService = _ttsServiceFactory.Get(ttsApi);
+
+            var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxLengthPerApiRequest);
+
+            var progress = new Progress<ProgressReport>();
+
+            progress.ProgressChanged += async (_, report) =>
+                await UpdateStatusAndProgress(fileId, report, finalStatus, ownerId);
+
+            var bytesCollection = await ttsService.RequestSpeechChunksAsync(textChunks,
+                fileId,
+                request,
+                progress,
+                cancellationToken);
+
+            var bytes = AudioFileService.ConcatenateRawAudioChunks(bytesCollection, request.ResponseFormat.ToString());
+
+            if (request.ResponseFormat != SpeechResponseFormat.Pcm)
+            {
+                bytes = await _metaDataService.AddMetaData(bytes, request.ResponseFormat.ToString(), fileName);
+            }
 
             finalStatus = Status.Completed;
+
             audioFile.Status = finalStatus;
             audioFile.SetDataOnce(bytes);
 
@@ -122,8 +146,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         }
         finally
         {
-            await UpdateAudioStatus(fileId, finalStatus.ToString(), ownerId,
-                errorMessage: errorMessage, delayMs: StatusUpdateDelayMs);
+            await UpdateAudioStatus(fileId, finalStatus.ToString(), ownerId, errorMessage: errorMessage, delayMs: StatusUpdateDelayMs);
         }
     }
 
@@ -165,63 +188,12 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         return new MemoryStream(audioFile.Data);
     }
 
-    private AudioFile CreateFullAudioFile(
-        TtsRequestOptions request,
-        string fileText,
-        string fileName,
-        string ttsApi,
-        Guid fileId,
-        string ownerId)
-    {
-        return AudioFileBuilder.Create([],
-            AudioType.Full,
-            fileText,
-            request,
-            ownerId,
-            Shared.TtsApis.Single(kv => kv.Key.Equals(ttsApi, StringComparison.OrdinalIgnoreCase)).Value,
-            fileName,
-            fileId);
-    }
-
-    private async Task<byte[]> GenerateSpeechBytes(
-        TtsRequestOptions request,
-        string fileText,
-        string fileName,
-        string ttsApi,
-        Guid fileId,
-        string ownerId,
-        Func<Status> getStatus,
-        CancellationToken cancellationToken)
-    {
-        var ttsService = _ttsServiceFactory.Get(ttsApi);
-        var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxLengthPerApiRequest);
-        var progress = new Progress<ProgressReport>();
-
-        progress.ProgressChanged += async (_, report) =>
-            await UpdateStatusAndProgress(fileId, report, getStatus(), ownerId);
-
-        var bytesCollection = await ttsService.RequestSpeechChunksAsync(textChunks,
-            fileId,
-            request,
-            progress,
-            cancellationToken);
-        var bytes = AudioFileService.ConcatenateRawAudioChunks(bytesCollection, request.ResponseFormat.ToString());
-
-        if (request.ResponseFormat != SpeechResponseFormat.Pcm)
-        {
-            bytes = await _metaDataService.AddMetaData(bytes, request.ResponseFormat.ToString(), fileName);
-        }
-
-        return bytes;
-    }
-
     private async Task<string> ExtractText(byte[] fileBytes, string fileName)
     {
         var fileProcessor = _fileProcessorFactory.GetProcessor(Path.GetExtension(fileName)) ??
             throw new NotSupportedException("File type not supported");
 
         var fileText = await fileProcessor.ExtractTextAsync(fileBytes);
-
         return fileText;
     }
 
@@ -248,6 +220,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
             await _hubContext.Clients.Group(ownerId)
                 .SendAsync(Shared.AudioStatusUpdated, fileId, status, progressPercentage, errorMessage);
+
         }
         catch (Exception ex)
         {
@@ -266,8 +239,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             return;
         }
 
-        await UpdateAudioStatus(report.FileId, status.ToString(), ownerId, report.ProgressPercentage)
-            .ConfigureAwait(false);
+        await UpdateAudioStatus(report.FileId, status.ToString(), ownerId, report.ProgressPercentage).ConfigureAwait(false);
 
         _lastProgressDictionary[fileId] = report.ProgressPercentage;
     }

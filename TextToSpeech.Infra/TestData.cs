@@ -26,10 +26,7 @@ public static class TestData
             AudioType.Sample,
             TtsSampleRequest,
             new TtsRequestOptions() {
-                Voice = new Voice() {
-                    Name = OpenAiVoices.Alloy.Name,
-                    ProviderVoiceId = OpenAiVoices.Alloy.ProviderVoiceId
-                },
+                Voice = new Voice() { Name = OpenAiVoices.Alloy.Name, ProviderVoiceId = OpenAiVoices.Alloy.ProviderVoiceId },
                 Model = "tts-1",
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
@@ -50,10 +47,7 @@ public static class TestData
             AudioType.Full,
             TtsFullRequest,
             new TtsRequestOptions() {
-                Voice = new Voice() {
-                    Name = OpenAiVoices.Fable.Name,
-                    ProviderVoiceId = OpenAiVoices.Fable.ProviderVoiceId
-                },
+                Voice = new Voice() { Name = OpenAiVoices.Fable.Name, ProviderVoiceId = OpenAiVoices.Fable.ProviderVoiceId },
                 Model = "tts-1",
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
