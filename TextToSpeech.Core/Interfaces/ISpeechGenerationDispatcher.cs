@@ -1,8 +1,6 @@
-using TextToSpeech.Core.Models;
-
 namespace TextToSpeech.Core.Interfaces;
 
 public interface ISpeechGenerationDispatcher
 {
-    Task DispatchAsync(SpeechGenerationInput input, CancellationToken cancellationToken);
+    Task DispatchAsync(Guid jobId, Guid fileId, string ownerId, CancellationToken cancellationToken);
 }

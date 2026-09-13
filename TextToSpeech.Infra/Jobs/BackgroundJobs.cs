@@ -11,7 +11,7 @@ public sealed class BackgroundJobs(AppDbContext context) : IBackgroundJobs
 
     public async Task<JobSnapshot?> GetAsync(Guid jobId, string ownerId, CancellationToken cancellationToken)
     {
-        var job = await context.Set<BackgroundJob>()
+        var job = await context.BackgroundJobs
             .AsNoTracking()
             .SingleOrDefaultAsync(x => x.Id == jobId && x.OwnerId == ownerId, cancellationToken);
 
@@ -76,7 +76,7 @@ public sealed class BackgroundJobs(AppDbContext context) : IBackgroundJobs
                 StartedAt = now
             };
 
-            context.Add(attempt);
+            context.BackgroundJobAttempts.Add(attempt);
 
             job.CurrentAttemptId = attempt.Id;
             job.LeaseExpiresAt = now + leaseDuration;
@@ -288,7 +288,7 @@ public sealed class BackgroundJobs(AppDbContext context) : IBackgroundJobs
 
     private async Task<BackgroundJob?> LockAsync(Guid jobId, CancellationToken cancellationToken)
     {
-        var job = await context.Set<BackgroundJob>()
+        var job = await context.BackgroundJobs
             .FromSqlInterpolated($"SELECT * FROM jobs.\"BackgroundJob\" WHERE \"Id\" = {jobId} FOR UPDATE")
             .SingleOrDefaultAsync(cancellationToken);
 
@@ -316,7 +316,7 @@ public sealed class BackgroundJobs(AppDbContext context) : IBackgroundJobs
     {
         if (job.CurrentAttemptId.HasValue)
         {
-            var attempt = await context.Set<BackgroundJobAttempt>()
+            var attempt = await context.BackgroundJobAttempts
                 .SingleAsync(x => x.Id == job.CurrentAttemptId.Value, cancellationToken);
 
             attempt.Status = attemptStatus;

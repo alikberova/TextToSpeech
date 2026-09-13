@@ -20,14 +20,14 @@ internal sealed class SpeechGenerationProgress : IProgress<ProgressReport>
         _reports.Writer.TryComplete();
     }
 
-    public async Task PublishAsync(SpeechGenerationInput input, ISpeechGenerationNotifications notifications)
+    public async Task PublishAsync(Guid fileId, string ownerId, ISpeechGenerationNotifications notifications)
     {
         var lastProgress = -1;
         await foreach (var report in _reports.Reader.ReadAllAsync())
         {
             if (report.ProgressPercentage > lastProgress)
             {
-                await notifications.PublishAsync(input.FileId, input.OwnerId, Status.Processing, report.ProgressPercentage);
+                await notifications.PublishAsync(fileId, ownerId, Status.Processing, report.ProgressPercentage);
                 lastProgress = report.ProgressPercentage;
             }
         }

@@ -1,6 +1,6 @@
 namespace TextToSpeech.Core.Models;
 
-// Transitional execution input; durable source references belong to the storage stage.
+// Materialized speech input loaded from durable request metadata and artifact storage; never a queue message.
 public sealed record SpeechGenerationInput(
     Guid FileId,
     string OwnerId,

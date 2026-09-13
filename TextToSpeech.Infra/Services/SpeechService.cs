@@ -11,7 +11,8 @@ namespace TextToSpeech.Infra.Services;
 
 public sealed class SpeechService(ITtsServiceFactory _ttsServiceFactory,
     IAudioFileRepository _audioFileRepository,
-    IRedisCacheProvider _redisCacheProvider) : ISpeechService
+    IRedisCacheProvider _redisCacheProvider,
+    IArtifactStorage storage) : ISpeechService
 {
     public async Task<MemoryStream> CreateSpeechSample(TtsRequestOptions request, string input, string ttsApi,
         string ownerId)
@@ -29,15 +30,18 @@ public sealed class SpeechService(ITtsServiceFactory _ttsServiceFactory,
 
         if (audioFile is not null)
         {
-            await _redisCacheProvider.SetBytes(hash, audioFile.Data);
-            return new MemoryStream(audioFile.Data);
+            bytes = await storage.ReadBytesAsync(audioFile.ContentId, CancellationToken.None);
+
+            await _redisCacheProvider.SetBytes(hash, bytes);
+
+            return new MemoryStream(bytes);
         }
 
         var bytesCollection = await _ttsServiceFactory.Get(ttsApi)
             .RequestSpeechSample(input, request);
 
-        audioFile = AudioFileBuilder.Create(bytesCollection.ToArray(),
-            AudioType.Sample,
+        bytes = bytesCollection.ToArray();
+        audioFile = AudioFileBuilder.Create(AudioType.Sample,
             input,
             request,
             ownerId,
@@ -45,9 +49,9 @@ public sealed class SpeechService(ITtsServiceFactory _ttsServiceFactory,
 
         audioFile.Status = Status.Completed;
 
-        await _redisCacheProvider.SetBytes(hash, audioFile.Data);
-        await _audioFileRepository.Add(audioFile);
+        await _redisCacheProvider.SetBytes(hash, bytes);
+        await _audioFileRepository.Add(audioFile, bytes);
 
-        return new MemoryStream(audioFile.Data);
+        return new MemoryStream(bytes);
     }
 }

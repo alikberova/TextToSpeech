@@ -2,18 +2,28 @@
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 using TextToSpeech.Infra.Interfaces;
+using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Core.Jobs;
 
 namespace TextToSpeech.Infra.SignalR;
 
 [Authorize]
-public sealed class AudioHub(ICancellationRegistry cancellationRegistry) : Hub
+public sealed class AudioHub(
+    ICancellationRegistry cancellationRegistry,
+    ISpeechGenerationRequests requests,
+    IBackgroundJobs jobs) : Hub
 {
     public async Task CancelProcessing(Guid audioFileId)
     {
         var ownerId = GetOwnerId();
         if (ownerId is not null)
         {
-            await cancellationRegistry.TryCancelTask(audioFileId, ownerId);
+            var jobId = await requests.GetJobIdAsync(audioFileId, ownerId, Context.ConnectionAborted);
+
+            if (jobId.HasValue && await jobs.RequestCancellationAsync(jobId.Value, ownerId, Context.ConnectionAborted))
+            {
+                await cancellationRegistry.TryCancelTask(audioFileId, ownerId);
+            }
         }
     }
 

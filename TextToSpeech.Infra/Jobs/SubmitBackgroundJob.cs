@@ -8,24 +8,12 @@ public sealed class SubmitBackgroundJob(AppDbContext context) : ISubmitBackgroun
 {
     public Task<JobAcceptance> SubmitAsync(JobSubmission submission, CancellationToken cancellationToken)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(submission.JobType);
-        ArgumentException.ThrowIfNullOrWhiteSpace(submission.OwnerId);
-        ArgumentException.ThrowIfNullOrWhiteSpace(submission.IdempotencyKey);
-        ArgumentException.ThrowIfNullOrWhiteSpace(submission.InputFingerprint);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(submission.OwnerId.Length, JobSubmission.MaxOwnerIdLength,
-            nameof(submission.OwnerId));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(submission.JobType.Length, JobSubmission.MaxJobTypeLength,
-            nameof(submission.JobType));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(submission.IdempotencyKey.Length, JobSubmission.MaxIdempotencyKeyLength,
-            nameof(submission.IdempotencyKey));
-        ArgumentOutOfRangeException.ThrowIfLessThan(submission.InputVersion, 1);
-        ArgumentOutOfRangeException.ThrowIfLessThan(submission.MaxAttempts, 1);
-
+        Validate(submission);
         return context.InTransactionAsync(async () =>
         {
             await context.LockSubmissionAsync(submission, cancellationToken);
 
-            var existing = await context.Set<BackgroundJob>()
+            var existing = await context.BackgroundJobs
                 .AsNoTracking()
                 .SingleOrDefaultAsync(x =>
                     x.OwnerId == submission.OwnerId &&
@@ -60,12 +48,30 @@ public sealed class SubmitBackgroundJob(AppDbContext context) : ISubmitBackgroun
                 AvailableAt = now
             };
 
-            context.Add(job);
+            context.BackgroundJobs.Add(job);
             context.AddEvent(job, JobEventKind.Submitted, now);
             context.AddDispatch(job, now);
             await context.SaveChangesAsync(cancellationToken);
 
             return new JobAcceptance(job.Id, job.InputId, true);
         }, cancellationToken);
+    }
+
+    private static void Validate(JobSubmission submission)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(submission.JobType);
+        ArgumentException.ThrowIfNullOrWhiteSpace(submission.OwnerId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(submission.IdempotencyKey);
+        ArgumentException.ThrowIfNullOrWhiteSpace(submission.InputFingerprint);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(submission.OwnerId.Length, JobSubmission.MaxOwnerIdLength,
+            nameof(submission.OwnerId));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(submission.JobType.Length, JobSubmission.MaxJobTypeLength,
+            nameof(submission.JobType));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(
+            submission.IdempotencyKey.Length,
+            JobSubmission.MaxIdempotencyKeyLength,
+            nameof(submission.IdempotencyKey));
+        ArgumentOutOfRangeException.ThrowIfLessThan(submission.InputVersion, 1);
+        ArgumentOutOfRangeException.ThrowIfLessThan(submission.MaxAttempts, 1);
     }
 }

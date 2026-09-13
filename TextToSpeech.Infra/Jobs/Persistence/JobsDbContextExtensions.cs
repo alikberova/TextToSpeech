@@ -25,7 +25,7 @@ internal static class JobsDbContextExtensions
 
     internal static void AddEvent(this AppDbContext context, BackgroundJob job, JobEventKind kind, DateTimeOffset now)
     {
-        context.Add(new BackgroundJobEvent
+        context.BackgroundJobEvents.Add(new BackgroundJobEvent
         {
             JobId = job.Id,
             AttemptId = job.CurrentAttemptId,
@@ -38,7 +38,7 @@ internal static class JobsDbContextExtensions
 
     internal static void AddDispatch(this AppDbContext context, BackgroundJob job, DateTimeOffset now)
     {
-        context.Add(new OutboxMessage
+        context.OutboxMessages.Add(new OutboxMessage
         {
             Id = Guid.NewGuid(),
             JobId = job.Id,

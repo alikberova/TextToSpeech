@@ -22,12 +22,15 @@ public static class TestData
 
     public static AudioFile CreateAudioSampleAlloy()
     {
-        var audio = AudioFileBuilder.Create(AudioFileService.GenerateSilentMp3(5),
-            AudioType.Sample,
+        var audio = AudioFileBuilder.Create(AudioType.Sample,
             TtsSampleRequest,
             new TtsRequestOptions()
             {
-                Voice = new Voice() { Name = OpenAiVoices.Alloy.Name, ProviderVoiceId = OpenAiVoices.Alloy.ProviderVoiceId },
+                Voice = new Voice()
+                {
+                    Name = OpenAiVoices.Alloy.Name,
+                    ProviderVoiceId = OpenAiVoices.Alloy.ProviderVoiceId
+                },
                 Model = "tts-1",
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
@@ -44,12 +47,15 @@ public static class TestData
 
     public static AudioFile CreateAudioFullFable()
     {
-        var audio = AudioFileBuilder.Create(AudioFileService.GenerateSilentMp3(3),
-            AudioType.Full,
+        var audio = AudioFileBuilder.Create(AudioType.Full,
             TtsFullRequest,
             new TtsRequestOptions()
             {
-                Voice = new Voice() { Name = OpenAiVoices.Fable.Name, ProviderVoiceId = OpenAiVoices.Fable.ProviderVoiceId },
+                Voice = new Voice()
+                {
+                    Name = OpenAiVoices.Fable.Name,
+                    ProviderVoiceId = OpenAiVoices.Fable.ProviderVoiceId
+                },
                 Model = "tts-1",
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3

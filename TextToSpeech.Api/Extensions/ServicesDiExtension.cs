@@ -19,6 +19,7 @@ using TextToSpeech.Infra.Services.Common;
 using TextToSpeech.Infra.Services.FileProcessing;
 using TextToSpeech.Infra.Stubs;
 using TextToSpeech.Infra.SignalR;
+using TextToSpeech.Infra.Storage;
 
 namespace TextToSpeech.Api.Extensions;
 
@@ -33,6 +34,8 @@ internal static class ServicesDiExtension
 
         services.AddScoped<ISpeechService, SpeechService>();
         services.AddScoped<ISubmitSpeechGeneration, SubmitSpeechGeneration>();
+        services.AddScoped<ISpeechGenerationRequests, SpeechGenerationRequests>();
+        services.AddSingleton<IArtifactStorage, FileSystemArtifactStorage>();
         services.AddScoped<IExecuteSpeechGeneration, ExecuteSpeechGeneration>();
         services.AddSingleton<ISpeechGenerationDispatcher, QueuedSpeechGenerationDispatcher>();
         services.AddScoped<ISpeechGenerationNotifications, SpeechGenerationNotifications>();

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 using Testcontainers.Redis;
 using TextToSpeech.Infra.Config;
 using static TextToSpeech.Infra.Config.ConfigConstants;
@@ -12,6 +13,7 @@ public class TestWebApplicationFactory<TProgram>
 {
     private readonly RedisContainer _cacheContainer;
     private readonly PostgreSqlFixture _dbContainer;
+    private readonly DirectoryInfo _artifactsDirectory = Directory.CreateTempSubdirectory("tts-tests-");
 
     public static string CacheConnectionEnv => $"ConnectionStrings__{ConnectionStrings.CacheConnection}";
     public static string DbConnectionEnv => $"ConnectionStrings__{ConnectionStrings.DbConnection}";
@@ -37,14 +39,25 @@ public class TestWebApplicationFactory<TProgram>
 
     public new async Task DisposeAsync()
     {
+        HttpClient?.Dispose();
+        await base.DisposeAsync();
         await _cacheContainer.DisposeAsync();
         await _dbContainer.DisposeAsync();
 
-        HttpClient?.Dispose();
+        if (_artifactsDirectory.Exists)
+        {
+            _artifactsDirectory.Delete(recursive: true);
+        }
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.ConfigureAppConfiguration((_, configuration) =>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                [AppDataPath] = _artifactsDirectory.FullName
+            }));
+
         // local, no docker
         if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == null)
         {
