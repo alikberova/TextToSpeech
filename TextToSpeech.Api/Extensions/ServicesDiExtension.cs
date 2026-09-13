@@ -1,4 +1,4 @@
-﻿using ElevenLabs;
+using ElevenLabs;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using OpenAI;
@@ -11,6 +11,7 @@ using TextToSpeech.Infra;
 using TextToSpeech.Infra.Config;
 using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Interfaces;
+using TextToSpeech.Infra.Jobs;
 using TextToSpeech.Infra.Repositories;
 using TextToSpeech.Infra.Services;
 using TextToSpeech.Infra.Services.Ai;
@@ -26,6 +27,7 @@ internal static class ServicesDiExtension
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<IDbInitializer, DbInitializer>();
+        services.AddBackgroundJobs();
 
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
 

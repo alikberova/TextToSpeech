@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TextToSpeech.Core.Entities;
+using TextToSpeech.Infra.Jobs;
 
 namespace TextToSpeech.Infra;
 
@@ -15,6 +16,7 @@ public sealed class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ConfigureJobs();
 
         modelBuilder.Entity<TtsApi>()
             .HasMany(ss => ss.AudioFiles)
