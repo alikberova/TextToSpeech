@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using TextToSpeech.Core.Jobs;
 using TextToSpeech.Infra.Config;
-using static TextToSpeech.Infra.Config.ConfigConstants;
 
 namespace TextToSpeech.Infra.Jobs.Transport;
 
@@ -58,7 +57,7 @@ public sealed class RabbitMqJobDispatchPublisher(IOptions<RabbitMqConfig> option
 
         await CloseConnectionAsync();
 
-        var connection = options.Value.GetConnection(ConnectionStrings.RabbitMqConnection);
+        var connection = options.Value.RabbitMqConnection;
         var factory = new ConnectionFactory
         {
             HostName = connection.HostName,

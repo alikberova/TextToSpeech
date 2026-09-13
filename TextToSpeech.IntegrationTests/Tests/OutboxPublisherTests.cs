@@ -88,14 +88,6 @@ public sealed class OutboxPublisherTests(PostgreSqlFixture database, RabbitMqFix
             Password = broker.Password,
             VirtualHost = broker.VirtualHost
         },
-        RabbitMqTestConnection = new RabbitMqConnectionConfig
-        {
-            HostName = broker.HostName,
-            Port = broker.Port,
-            UserName = broker.UserName,
-            Password = broker.Password,
-            VirtualHost = broker.VirtualHost
-        },
         Exchange = Guid.NewGuid().ToString(),
         Queue = Guid.NewGuid().ToString(),
         RoutingKey = "dispatch",

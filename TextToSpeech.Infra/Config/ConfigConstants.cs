@@ -12,18 +12,12 @@ public static class ConfigConstants
 
     public static class ConnectionStrings
     {
-        public const string RabbitMqDefaultConnection = "RabbitMqConnection";
-        public const string RabbitMqTestConnection = "RabbitMqTestConnection";
-
         public static string CacheConnection => HostingEnvironment.IsTestMode() && HostingEnvironment.IsWindows()
             ? "RedisTestConnection"
             : "RedisConnection";
         public static string DbConnection => HostingEnvironment.IsTestMode() && HostingEnvironment.IsWindows()
             ? "DbTestConnection"
             : "DefaultConnection";
-        public static string RabbitMqConnection => HostingEnvironment.IsTestMode() && HostingEnvironment.IsWindows()
-            ? RabbitMqTestConnection
-            : RabbitMqDefaultConnection;
     }
 
     public const string AppDataPath = "AppDataPath";

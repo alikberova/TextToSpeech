@@ -55,9 +55,6 @@ public class TestWebApplicationFactory<TProgram>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        // todo declared before IsTestMode. can cause problems
-        builder.ConfigureAppConfiguration((_, configuration) => CreateTestConfiguration());
-
         // local, no docker
         if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == null)
         {
@@ -67,6 +64,8 @@ public class TestWebApplicationFactory<TProgram>
         Environment.SetEnvironmentVariable(IsTestMode, "true");
         Environment.SetEnvironmentVariable(DbConnectionEnv, _dbContainer.ConnectionString);
         Environment.SetEnvironmentVariable(CacheConnectionEnv, _cacheContainer.GetConnectionString());
+
+        builder.ConfigureAppConfiguration((_, configuration) => CreateTestConfiguration());
     }
 
     private Dictionary<string, string?> CreateTestConfiguration()
@@ -83,18 +82,18 @@ public class TestWebApplicationFactory<TProgram>
 
     private void AddRabbitMqConnectionTestValues(Dictionary<string, string?> values)
     {
-        var rabbitMqTestConnectionBasePath =
-            $"{SectionNames.RabbitMqConfig}:{ConnectionStrings.RabbitMqTestConnection}";
+        var rabbitMqConnectionBasePath =
+            $"{SectionNames.RabbitMqConfig}:{nameof(RabbitMqConfig.RabbitMqConnection)}";
 
-        values[$"{rabbitMqTestConnectionBasePath}:{nameof(RabbitMqConnectionConfig.HostName)}"] =
+        values[$"{rabbitMqConnectionBasePath}:{nameof(RabbitMqConnectionConfig.HostName)}"] =
             _rabbitMq.HostName;
-        values[$"{rabbitMqTestConnectionBasePath}:{nameof(RabbitMqConnectionConfig.Port)}"] =
+        values[$"{rabbitMqConnectionBasePath}:{nameof(RabbitMqConnectionConfig.Port)}"] =
             _rabbitMq.Port.ToString();
-        values[$"{rabbitMqTestConnectionBasePath}:{nameof(RabbitMqConnectionConfig.UserName)}"] =
+        values[$"{rabbitMqConnectionBasePath}:{nameof(RabbitMqConnectionConfig.UserName)}"] =
             _rabbitMq.UserName;
-        values[$"{rabbitMqTestConnectionBasePath}:{nameof(RabbitMqConnectionConfig.Password)}"] =
+        values[$"{rabbitMqConnectionBasePath}:{nameof(RabbitMqConnectionConfig.Password)}"] =
             _rabbitMq.Password;
-        values[$"{rabbitMqTestConnectionBasePath}:{nameof(RabbitMqConnectionConfig.VirtualHost)}"] =
+        values[$"{rabbitMqConnectionBasePath}:{nameof(RabbitMqConnectionConfig.VirtualHost)}"] =
             _rabbitMq.VirtualHost;
     }
 }

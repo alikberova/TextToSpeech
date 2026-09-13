@@ -26,14 +26,12 @@ public static class OutboxConfiguration
 
     private static void ValidateRabbitMqConfig(RabbitMqConfig config)
     {
-        var selectedConnectionName = ConnectionStrings.RabbitMqConnection;
-        var selectedConnection = config.GetConnection(selectedConnectionName);
-        var missingFields = GetMissingRabbitMqConnectionFields(selectedConnection);
+        var missingFields = GetMissingRabbitMqConnectionFields(config.RabbitMqConnection);
 
         if (missingFields.Length > 0)
         {
             throw new InvalidOperationException(
-                $"RabbitMq configuration is invalid. Missing required fields in {selectedConnectionName}: " +
+                "RabbitMq configuration is invalid. Missing required connection fields: " +
                 $"{string.Join(", ", missingFields)}.");
         }
 
