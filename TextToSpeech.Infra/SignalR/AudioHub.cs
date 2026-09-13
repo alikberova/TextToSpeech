@@ -6,14 +6,14 @@ using TextToSpeech.Infra.Interfaces;
 namespace TextToSpeech.Infra.SignalR;
 
 [Authorize]
-public sealed class AudioHub(ICancellationRegistry _taskManager) : Hub
+public sealed class AudioHub(ICancellationRegistry cancellationRegistry) : Hub
 {
     public async Task CancelProcessing(Guid audioFileId)
     {
         var ownerId = GetOwnerId();
         if (ownerId is not null)
         {
-            await _taskManager.TryCancelTask(audioFileId, ownerId);
+            await cancellationRegistry.TryCancelTask(audioFileId, ownerId);
         }
     }
 

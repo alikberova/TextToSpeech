@@ -10,14 +10,14 @@ namespace TextToSpeech.Infra.Services;
 // Temporary host adapter. Replace it with durable dispatch when introducing the Jobs module.
 public sealed class QueuedSpeechGenerationDispatcher(
     IBackgroundTaskQueue backgroundTaskQueue,
-    ICancellationRegistry taskManager,
+    ICancellationRegistry cancellationRegistry,
     IServiceScopeFactory serviceScopeFactory,
     ILogger<QueuedSpeechGenerationDispatcher> logger) : ISpeechGenerationDispatcher
 {
     public async Task DispatchAsync(SpeechGenerationInput input, CancellationToken cancellationToken)
     {
         var cancellationSource = new CancellationTokenSource();
-        taskManager.AddTask(input.FileId, input.OwnerId, cancellationSource);
+        cancellationRegistry.AddTask(input.FileId, input.OwnerId, cancellationSource);
         try
         {
             await backgroundTaskQueue.QueueBackgroundWorkItem(
@@ -25,7 +25,7 @@ public sealed class QueuedSpeechGenerationDispatcher(
         }
         catch
         {
-            await taskManager.CompleteTaskAsync(input.FileId);
+            await cancellationRegistry.CompleteTaskAsync(input.FileId);
             throw;
         }
     }
@@ -70,7 +70,7 @@ public sealed class QueuedSpeechGenerationDispatcher(
         }
         finally
         {
-            await taskManager.CompleteTaskAsync(input.FileId);
+            await cancellationRegistry.CompleteTaskAsync(input.FileId);
         }
     }
 }
