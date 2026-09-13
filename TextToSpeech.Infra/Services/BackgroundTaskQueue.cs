@@ -17,9 +17,9 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
         _queue = Channel.CreateBounded<Func<CancellationToken, Task>>(options);
     }
 
-    public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem)
+    public async Task QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem, CancellationToken cancellationToken)
     {
-        _queue.Writer.TryWrite(workItem);
+        await _queue.Writer.WriteAsync(workItem, cancellationToken);
     }
 
     public async Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken)

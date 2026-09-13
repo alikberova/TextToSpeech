@@ -2,6 +2,7 @@
 using TextToSpeech.Core.Interfaces.Repositories;
 using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Interfaces;
+using TextToSpeech.Infra.Services.FileProcessing;
 using static TextToSpeech.Infra.TestData;
 
 namespace TextToSpeech.Infra.Services;
@@ -27,25 +28,25 @@ public sealed class TestSeedService : ITestSeedService
 
     private async Task SeedAudioFilesAsync()
     {
-        var audios = new List<AudioFile>
+        var audios = new List<(AudioFile Audio, byte[] Content)>
         {
-            CreateAudioSampleAlloy(),
-            CreateAudioFullFable()
+            (CreateAudioSampleAlloy(), AudioFileService.GenerateSilentMp3(5)),
+            (CreateAudioFullFable(), AudioFileService.GenerateSilentMp3(3))
         };
 
-        foreach (var audio in audios)
+        foreach (var (audio, content) in audios)
         {
             var existing = await _audioRepository.GetByIdAsNoTracking(audio.Id);
 
             if (existing is null)
             {
-                await _audioRepository.Add(audio);
+                await _audioRepository.Add(audio, content);
                 continue;
             }
 
             if (existing.Hash != audio.Hash)
             {
-                await _audioRepository.Update(audio);
+                await _audioRepository.Update(audio, content);
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Text;
@@ -11,7 +11,7 @@ namespace TextToSpeech.IntegrationTests;
 
 internal static class SpeechRequestGenerator
 {
-    private static readonly Faker faker = new ();
+    private static readonly Faker faker = new();
 
     public static TtsRequest GenerateFakeSpeechRequest(string ttsApi, bool addFile = false)
     {

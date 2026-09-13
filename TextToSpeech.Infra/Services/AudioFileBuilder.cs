@@ -9,8 +9,7 @@ namespace TextToSpeech.Infra.Services;
 
 public static class AudioFileBuilder
 {
-    public static AudioFile Create(byte[] bytes,
-        AudioType type,
+    public static AudioFile Create(AudioType type,
         string input,
         TtsRequestOptions options,
         string ownerId,
@@ -39,8 +38,6 @@ public static class AudioFileBuilder
             TtsApiId = ttsApiId,
             OwnerId = ownerId
         };
-
-        audio.SetDataOnce(bytes);
 
         return audio;
     }

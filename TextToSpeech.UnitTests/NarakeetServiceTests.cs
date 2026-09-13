@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using System.Net;
@@ -149,5 +149,5 @@ public sealed class NarakeetServiceTests
             Mock.Of<ILogger<NarakeetService>>());
 
         return service;
-    } 
+    }
 }

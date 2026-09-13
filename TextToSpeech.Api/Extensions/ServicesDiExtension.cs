@@ -1,4 +1,4 @@
-﻿using ElevenLabs;
+using ElevenLabs;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using OpenAI;
@@ -11,12 +11,15 @@ using TextToSpeech.Infra;
 using TextToSpeech.Infra.Config;
 using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Interfaces;
+using TextToSpeech.Infra.Jobs;
 using TextToSpeech.Infra.Repositories;
 using TextToSpeech.Infra.Services;
 using TextToSpeech.Infra.Services.Ai;
 using TextToSpeech.Infra.Services.Common;
 using TextToSpeech.Infra.Services.FileProcessing;
 using TextToSpeech.Infra.Stubs;
+using TextToSpeech.Infra.SignalR;
+using TextToSpeech.Infra.Storage;
 
 namespace TextToSpeech.Api.Extensions;
 
@@ -25,9 +28,18 @@ internal static class ServicesDiExtension
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<IDbInitializer, DbInitializer>();
+        services.AddBackgroundJobs();
 
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
+
         services.AddScoped<ISpeechService, SpeechService>();
+        services.AddScoped<ISubmitSpeechGeneration, SubmitSpeechGeneration>();
+        services.AddScoped<ISpeechGenerationRequests, SpeechGenerationRequests>();
+        services.AddSingleton<IArtifactStorage, FileSystemArtifactStorage>();
+        services.AddScoped<IExecuteSpeechGeneration, ExecuteSpeechGeneration>();
+        services.AddSingleton<ISpeechGenerationDispatcher, QueuedSpeechGenerationDispatcher>();
+        services.AddScoped<ISpeechGenerationNotifications, SpeechGenerationNotifications>();
+
         services.AddScoped<IMetaDataService, MetaDataService>();
         services.AddScoped<ITtsServiceFactory, TtsServiceFactory>();
         services.AddScoped<ISmtpClient, SmtpClient>();
@@ -41,7 +53,7 @@ internal static class ServicesDiExtension
         services.AddSingleton<IFileProcessor, TextFileProcessor>();
         services.AddSingleton<IFileProcessor, PdfProcessor>();
         services.AddSingleton<IFileProcessor, EpubProcessor>();
-        services.AddSingleton<ITaskManager, TaskManager>();
+        services.AddSingleton<ICancellationRegistry, CancellationRegistry>();
         services.AddSingleton<IProgressTracker, ProgressTracker>();
         services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 

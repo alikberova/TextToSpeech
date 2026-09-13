@@ -15,6 +15,9 @@ services:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       IsTestMode: ${IsTestMode}
       ASPNETCORE_URLS: "http://+:80"
+      AppDataPath: /app/data
+    volumes:
+      - artifacts-data:/app/data
     container_name: api
     ports:
       - "7058:80"
@@ -80,5 +83,6 @@ networks:
     name: elk
 
 volumes:
+  artifacts-data:
   redis-data:
   db-data:
