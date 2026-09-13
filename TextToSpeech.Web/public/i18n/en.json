@@ -23,14 +23,14 @@
       "help": "Choose the provider's speech model."
     },
     "language": { "label": "Language", "placeholder": "Select a language" },
-    "voice": { "label": "Voice", "placeholder": "Select a voice"},
+    "voice": { "label": "Voice", "placeholder": "Select a voice" },
     "sample": {
       "label": "Text to voice",
       "placeholder": "Type something to preview…",
       "play": "Play sample",
       "help": "Type to listen to how AI will voice this text. Choose provider, model, and voice",
       "defaultText": "This is a sample for voice preview.\nYou can edit it to test how your text will sound",
-      "error": "Playback error" 
+      "error": "Playback error"
     },
     "file": {
       "label": "Source Text",
