@@ -1,4 +1,4 @@
-using ElevenLabs;
+﻿using ElevenLabs;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -17,7 +17,8 @@ public static class FakeElevenLabsClient
 
         var handler = FakeElevenLabsHandler.WithResponses(audioBytesResponse, voicesResponse);
 
-        var httpClient = new HttpClient(handler) {
+        var httpClient = new HttpClient(handler)
+        {
             BaseAddress = handler.BaseAddress
         };
 
@@ -43,8 +44,10 @@ sealed class FakeElevenLabsHandler : HttpMessageHandler
 
     public static FakeElevenLabsHandler WithResponses(byte[] audioBytes, Voice[] voices)
     {
-        var voicesPayload = new {
-            voices = voices.Select(v => new {
+        var voicesPayload = new
+        {
+            voices = voices.Select(v => new
+            {
                 voice_id = v.ProviderVoiceId,
                 name = v.Name
             })
@@ -61,7 +64,8 @@ sealed class FakeElevenLabsHandler : HttpMessageHandler
         {
             await Delay.RandomShort(cancellationToken);
 
-            return new HttpResponseMessage(HttpStatusCode.OK) {
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
                 Content = new StringContent(_voicesResponse, Encoding.UTF8, "application/json")
             };
         }
@@ -70,7 +74,8 @@ sealed class FakeElevenLabsHandler : HttpMessageHandler
         {
             await Delay.RandomMedium(cancellationToken);
 
-            var response = new HttpResponseMessage(HttpStatusCode.OK) {
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
                 Content = new ByteArrayContent(_audioBytes)
             };
 

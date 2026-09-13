@@ -1,4 +1,4 @@
-using Bogus;
+﻿using Bogus;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Text;
@@ -11,18 +11,20 @@ namespace TextToSpeech.IntegrationTests;
 
 internal static class SpeechRequestGenerator
 {
-    private static readonly Faker faker = new();
+    private static readonly Faker faker = new ();
 
     public static TtsRequest GenerateFakeSpeechRequest(string ttsApi, bool addFile = false)
     {
-        var ttsOptions = new TtsRequestOptions {
+        var ttsOptions = new TtsRequestOptions
+        {
             Model = GetModelByTtsApi(ttsApi),
             Voice = GetVoiceByTtsApi(ttsApi),
             Speed = Math.Round(faker.Random.Double(0.5, 2.0), 1),
             ResponseFormat = SpeechResponseFormat.Mp3
         };
 
-        var speechRequest = new TtsRequest {
+        var speechRequest = new TtsRequest
+        {
             TtsApi = ttsApi,
             LanguageCode = "en",
             Input = faker.Lorem.Sentence(),
@@ -52,7 +54,8 @@ internal static class SpeechRequestGenerator
 
     private static Voice GetVoiceByTtsApi(string ttsApi)
     {
-        return ttsApi switch {
+        return ttsApi switch
+        {
             Shared.OpenAI.Key => faker.PickRandom(TestData.OpenAiVoices.All),
             Shared.Narakeet.Key => faker.PickRandom(TestData.NarakeetVoices.All),
             Shared.ElevenLabs.Key => faker.PickRandom(TestData.ElevenLabsVoices.All),
@@ -62,7 +65,8 @@ internal static class SpeechRequestGenerator
 
     private static string? GetModelByTtsApi(string ttsApi)
     {
-        return ttsApi switch {
+        return ttsApi switch
+        {
             Shared.OpenAI.Key => "gpt-4o-mini-tts",
             Shared.ElevenLabs.Key => "eleven_multilingual_v2",
             _ => null,

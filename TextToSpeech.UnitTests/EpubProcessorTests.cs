@@ -1,4 +1,4 @@
-using EpubSharp;
+﻿using EpubSharp;
 using TextToSpeech.Infra.Services.FileProcessing;
 using Xunit;
 

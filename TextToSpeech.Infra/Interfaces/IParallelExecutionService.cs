@@ -1,4 +1,4 @@
-namespace TextToSpeech.Infra.Interfaces;
+﻿namespace TextToSpeech.Infra.Interfaces;
 
 public interface IParallelExecutionService
 {

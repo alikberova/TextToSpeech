@@ -1,4 +1,4 @@
-using TextToSpeech.Core.Interfaces;
+﻿using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services.FileProcessing;
 

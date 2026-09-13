@@ -1,4 +1,4 @@
-namespace TextToSpeech.Infra.Services.FileProcessing;
+﻿namespace TextToSpeech.Infra.Services.FileProcessing;
 
 public static class AudioFileService
 {
@@ -76,9 +76,7 @@ public static class AudioFileService
         for (int i = 0; i < bitrates.Length; i++)
         {
             if (bitrates[i] == bitrate)
-            {
                 return i + 1;
-            }
         }
         throw new ArgumentOutOfRangeException(nameof(bitrate));
     }
@@ -89,9 +87,7 @@ public static class AudioFileService
         for (int i = 0; i < sampleRates.Length; i++)
         {
             if (sampleRates[i] == sampleRate)
-            {
                 return i;
-            }
         }
         throw new ArgumentOutOfRangeException(nameof(sampleRate));
     }

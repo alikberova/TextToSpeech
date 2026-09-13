@@ -1,4 +1,4 @@
-using ElevenLabs;
+﻿using ElevenLabs;
 using ElevenLabs.Models;
 using ElevenLabs.TextToSpeech;
 using ElevenLabs.Voices;
@@ -75,7 +75,8 @@ public sealed class ElevenLabsService : ITtsService
             return null;
         }
 
-        var mapped = voices.Select(v => new Voice {
+        var mapped = voices.Select(v => new Voice
+        {
             Name = v.Name.Split(" - ", 2)[0], // remove description
             ProviderVoiceId = v.Id
         }).ToList();
@@ -86,7 +87,8 @@ public sealed class ElevenLabsService : ITtsService
     private async Task<ReadOnlyMemory<byte>> GenerateSpeech(string text, TtsRequestOptions ttsRequest,
         CancellationToken cancellationToken)
     {
-        VoiceSettings voiceSettings = new() {
+        VoiceSettings voiceSettings = new()
+        {
             Speed = Convert.ToSingle(ttsRequest.Speed) // 0.7-1.2
         };
 
@@ -105,7 +107,8 @@ public sealed class ElevenLabsService : ITtsService
 
     private static OutputFormat MapOutputFormat(SpeechResponseFormat format)
     {
-        return format.ToString() switch {
+        return format.ToString() switch
+        {
             "mp3" => OutputFormat.MP3_44100_128,
             "pcm" => OutputFormat.PCM_44100, // pro tier and above
             _ => throw new NotSupportedException($"ElevenLabs does not support the '{format}' format.")

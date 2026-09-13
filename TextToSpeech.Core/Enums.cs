@@ -1,4 +1,4 @@
-namespace TextToSpeech.Core;
+﻿namespace TextToSpeech.Core;
 
 public sealed class Enums
 {

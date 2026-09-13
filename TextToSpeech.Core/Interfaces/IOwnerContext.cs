@@ -1,4 +1,4 @@
-namespace TextToSpeech.Core.Interfaces;
+﻿namespace TextToSpeech.Core.Interfaces;
 
 public interface IOwnerContext
 {

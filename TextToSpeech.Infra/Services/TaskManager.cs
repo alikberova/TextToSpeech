@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.Infra.Services;

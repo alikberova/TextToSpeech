@@ -1,4 +1,4 @@
-
+﻿
 namespace TextToSpeech.Infra.Constants;
 
 public static class Shared
@@ -24,7 +24,8 @@ public static class Shared
         public static readonly Guid Id = Guid.Parse("70725f60-b457-4519-a1bc-6fb8212eb154");
     }
 
-    public static readonly IReadOnlyDictionary<string, Guid> TtsApis = new Dictionary<string, Guid>() {
+    public static readonly IReadOnlyDictionary<string, Guid> TtsApis = new Dictionary<string, Guid>()
+    {
         [Narakeet.Key] = Narakeet.Id,
         [OpenAI.Key] = OpenAI.Id,
         [ElevenLabs.Key] = ElevenLabs.Id,

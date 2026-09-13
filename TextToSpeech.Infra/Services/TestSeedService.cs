@@ -1,4 +1,4 @@
-using TextToSpeech.Core.Entities;
+﻿using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Interfaces.Repositories;
 using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Interfaces;

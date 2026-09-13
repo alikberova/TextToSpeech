@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace TextToSpeech.Api.Middleware;
 
@@ -24,7 +24,8 @@ internal sealed class ExceptionHandlingMiddleware
             _logger.LogError(ex, "Unhandled exception.");
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-            var problem = new ProblemDetails {
+            var problem = new ProblemDetails
+            {
                 Status = StatusCodes.Status500InternalServerError,
                 Title = "An error occurred processing your request.",
                 Extensions =

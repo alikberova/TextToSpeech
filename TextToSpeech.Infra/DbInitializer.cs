@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TextToSpeech.Core.Entities;
 using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Interfaces;
@@ -20,7 +20,8 @@ public sealed class DbInitializer(AppDbContext dbContext) : IDbInitializer
         {
             if (!dbContext.TtsApis.Any(s => s.Id == keyValue.Value))
             {
-                var service = new TtsApi() {
+                var service = new TtsApi()
+                {
                     Name = keyValue.Key,
                     Id = keyValue.Value,
                 };

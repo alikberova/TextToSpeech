@@ -1,4 +1,4 @@
-using TextToSpeech.Core.Models;
+﻿using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Services;
 using Xunit;
@@ -18,14 +18,16 @@ public class AudioFileBuilderTests
 
     private static Language Language => new("TestLang", "en-US");
 
-    private static TtsRequestOptions TtsRequest => new() {
+    private static TtsRequestOptions TtsRequest => new()
+    {
         Voice = CreateVoice(ProviderVoiceId),
         Speed = 1,
         ResponseFormat = SpeechResponseFormat.Mp3,
         Model = "test-model"
     };
 
-    private static Voice CreateVoice(string id, Language? lang = null) => new() {
+    private static Voice CreateVoice(string id, Language? lang = null) => new()
+    {
         Name = id,
         ProviderVoiceId = id,
         Language = lang
@@ -73,7 +75,8 @@ public class AudioFileBuilderTests
     public void Create_WhenLanguageIsProvided_AffectsEquality()
     {
         var request = TtsRequest with { Voice = CreateVoice(ProviderVoiceId, Language) };
-        var requestWithOtherLang = request with {
+        var requestWithOtherLang = request with
+        {
             Voice = CreateVoice(ProviderVoiceId, new Language("fr", "fr"))
         };
         var audioFile1 = AudioFileBuilder.Create(Bytes, Type, InputText, request, OwnerId);
@@ -155,7 +158,8 @@ public class AudioFileBuilderTests
             Bytes,
             Type,
             InputText,
-            TtsRequest with {
+            TtsRequest with
+            {
                 Voice = CreateVoice(ProviderVoiceId, Language with { LanguageCode = change })
             },
             OwnerId));

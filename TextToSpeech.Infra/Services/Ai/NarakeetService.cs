@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
@@ -69,7 +69,8 @@ public sealed class NarakeetService : ITtsService
             return null;
         }
 
-        var mapped = voices.Select(v => new Voice {
+        var mapped = voices.Select(v => new Voice
+        {
             Name = v.Name,
             ProviderVoiceId = v.Name,
             Language = new Language(v.Language, v.LanguageCode),

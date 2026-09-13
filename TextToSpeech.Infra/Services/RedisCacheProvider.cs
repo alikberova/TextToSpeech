@@ -1,4 +1,4 @@
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
 using System.Text.Json;
 using TextToSpeech.Infra.Interfaces;
 

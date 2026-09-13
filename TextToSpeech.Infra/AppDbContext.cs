@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TextToSpeech.Core.Entities;
 
 namespace TextToSpeech.Infra;

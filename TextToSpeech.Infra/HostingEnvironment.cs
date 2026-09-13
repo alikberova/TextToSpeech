@@ -1,4 +1,4 @@
-using TextToSpeech.Infra.Config;
+﻿using TextToSpeech.Infra.Config;
 
 namespace TextToSpeech.Infra;
 

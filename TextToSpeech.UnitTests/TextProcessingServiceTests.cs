@@ -1,4 +1,4 @@
-using TextToSpeech.Infra.Services;
+﻿using TextToSpeech.Infra.Services;
 using Xunit;
 
 namespace TextToSpeech.UnitTests;

@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using OpenAI;
 using OpenAI.Audio;
 using System.ClientModel;
@@ -96,7 +96,8 @@ public sealed class OpenAiService : ITtsService
     {
         AudioClient ??= GetClient(ttsRequest.Model!);
 
-        SpeechGenerationOptions options = new() {
+        SpeechGenerationOptions options = new()
+        {
             SpeedRatio = Convert.ToSingle(ttsRequest.Speed),
             ResponseFormat = ttsRequest.ResponseFormat.ToString()
         };

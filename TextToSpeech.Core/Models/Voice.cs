@@ -1,4 +1,4 @@
-using static TextToSpeech.Core.Enums;
+﻿using static TextToSpeech.Core.Enums;
 
 namespace TextToSpeech.Core.Models;
 

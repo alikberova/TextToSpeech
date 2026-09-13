@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using Moq;
 using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.SignalR;

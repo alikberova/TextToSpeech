@@ -1,4 +1,4 @@
-namespace TextToSpeech.Core.Models;
+﻿namespace TextToSpeech.Core.Models;
 
 public sealed record TtsRequestOptions
 {
