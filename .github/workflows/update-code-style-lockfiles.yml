@@ -1,4 +1,4 @@
-name: Update code style lock files
+name: Apply configured C# formatting
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  update-lock-files:
+  format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -19,13 +19,16 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Commit updated lock files
+      - name: Apply formatter
+        run: dotnet format TextToSpeech.sln --no-restore
+
+      - name: Commit formatter changes
         run: |
-          git add '**/packages.lock.json'
+          git add '**/*.cs' '**/packages.lock.json'
           if git diff --cached --quiet; then
             exit 0
           fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git commit -m "Update analyzer lock files"
+          git commit -m "Apply configured C# formatting"
           git push
