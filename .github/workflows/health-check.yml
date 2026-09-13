@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Check Backend health
         id: backend-check
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@c4f70287fc37c43b14b30b407224bbbc8e8c6327 # master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER_NAME }}
@@ -33,7 +33,7 @@ jobs:
 
       - name: Notify if services are down
         if: failure()
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             await github.rest.issues.create({
