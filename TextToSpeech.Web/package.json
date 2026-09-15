@@ -40,14 +40,14 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular-eslint/builder": "^21.1.0",
+    "@angular-eslint/builder": "^22.5.0",
     "@angular/build": "^21.2.24",
     "@angular/cli": "^21.2.24",
     "@angular/compiler-cli": "^21.2.23",
     "@eslint/js": "^9.39.2",
     "@vitest/coverage-v8": "^4.1.11",
     "angular-eslint": "21.2.0",
-    "eslint": "^9.39.2",
+    "eslint": "^10.10.0",
     "husky": "9.1.7",
     "jsdom": "^28.0.0",
     "knip": "^5.86.0",
