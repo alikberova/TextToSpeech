@@ -43,7 +43,7 @@
     "@angular-eslint/builder": "^21.1.0",
     "@angular/build": "^21.2.24",
     "@angular/cli": "^21.2.24",
-    "@angular/compiler-cli": "^21.2.23",
+    "@angular/compiler-cli": "^22.1.6",
     "@eslint/js": "^9.39.2",
     "@vitest/coverage-v8": "^4.1.11",
     "angular-eslint": "21.2.0",
