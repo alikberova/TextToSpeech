@@ -12,26 +12,26 @@ updates:
     target-branch: "dev"
     versioning-strategy: increase
     groups:
-      angular-core:
+      angular:
         applies-to: version-updates
         patterns:
-          - "@angular/core"
-          - "@angular/cli"
-          - "@angular/common"
-          - "@angular/compiler"
-          - "@angular/compiler-cli"
-          - "@angular/forms"
-          - "@angular/platform-browser"
-          - "@angular/router"
-          - "@angular/animations"
+          - "@angular/*"
+          - "@angular-eslint/*"
+          - "angular-eslint"
         update-types:
           - "minor"
           - "patch"
 
       eslint:
+        applies-to: version-updates
         patterns:
           - "eslint"
-          - "@angular-eslint/*"
+          - "@eslint/*"
+          - "typescript-eslint"
+          - "@typescript-eslint/*"
+        update-types:
+          - "minor"
+          - "patch"
 
       vitest:
         applies-to: version-updates
@@ -41,6 +41,30 @@ updates:
         update-types:
           - "minor"
           - "patch"
+
+    # Major frontend upgrades often require coordinated package changes or code migrations.
+    # Keep them out of automatic Dependabot PRs and handle them explicitly.
+    ignore:
+      - dependency-name: "@angular/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@angular-eslint/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "angular-eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@eslint/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript-eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@typescript-eslint/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "vitest"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@vitest/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@ngx-translate/core"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "nuget"
     directories:
