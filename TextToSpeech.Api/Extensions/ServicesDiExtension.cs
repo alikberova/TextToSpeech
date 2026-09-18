@@ -29,6 +29,7 @@ internal static class ServicesDiExtension
     {
         services.AddTransient<IDbInitializer, DbInitializer>();
         services.AddBackgroundJobs();
+        services.AddOutboxPublisher(configuration);
 
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
 
