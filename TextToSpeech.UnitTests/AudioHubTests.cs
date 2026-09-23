@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
 using Moq;
 using System.Security.Claims;
-using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Jobs;
 using TextToSpeech.Infra.SignalR;
@@ -12,7 +11,6 @@ namespace TextToSpeech.UnitTests;
 public sealed class AudioHubTests
 {
     private const string OwnerId = "owner-1";
-    private readonly Mock<ICancellationRegistry> _cancellationRegistryMock;
     private readonly AudioHub _audioHub;
     private readonly Mock<HubCallerContext> _mockContext;
     private readonly Mock<ISpeechGenerationRequests> _requests = new();
@@ -20,13 +18,12 @@ public sealed class AudioHubTests
 
     public AudioHubTests()
     {
-        _cancellationRegistryMock = new Mock<ICancellationRegistry>();
-        _audioHub = new AudioHub(_cancellationRegistryMock.Object, _requests.Object, _jobs.Object);
+        _audioHub = new AudioHub(new SpeechJobConnections(), _requests.Object, _jobs.Object);
         _mockContext = new Mock<HubCallerContext>();
     }
 
     [Fact]
-    public async Task CancelProcessing_ShouldInvokeCancellationRegistry()
+    public async Task CancelProcessing_PersistsOwnerCancellation()
     {
         // Arrange
         var fileId = Guid.NewGuid();
@@ -36,14 +33,12 @@ public sealed class AudioHubTests
         _jobs.Setup(j => j.RequestCancellationAsync(jobId, OwnerId, It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _mockContext.SetupGet(context => context.User)
             .Returns(new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, OwnerId)])));
-        _cancellationRegistryMock.Setup(x => x.TryCancelTask(fileId, OwnerId))
-            .Returns(Task.FromResult(true));
         _audioHub.Context = _mockContext.Object;
 
         // Act
         await _audioHub.CancelProcessing(fileId);
 
         // Assert
-        _cancellationRegistryMock.Verify(tm => tm.TryCancelTask(fileId, OwnerId), Times.Once);
+        _jobs.Verify(j => j.RequestCancellationAsync(jobId, OwnerId, It.IsAny<CancellationToken>()), Times.Once);
     }
 }

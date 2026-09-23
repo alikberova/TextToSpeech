@@ -1,23 +1,15 @@
-using ElevenLabs;
 using MailKit.Net.Smtp;
-using Microsoft.Extensions.Options;
-using OpenAI;
 using TextToSpeech.Api.Services;
 using TextToSpeech.Core.Interfaces;
-using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Interfaces.Repositories;
-using TextToSpeech.Core.Services;
 using TextToSpeech.Infra;
 using TextToSpeech.Infra.Config;
-using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.Jobs;
 using TextToSpeech.Infra.Repositories;
 using TextToSpeech.Infra.Services;
-using TextToSpeech.Infra.Services.Ai;
 using TextToSpeech.Infra.Services.Common;
 using TextToSpeech.Infra.Services.FileProcessing;
-using TextToSpeech.Infra.Stubs;
 using TextToSpeech.Infra.SignalR;
 using TextToSpeech.Infra.Storage;
 
@@ -37,12 +29,9 @@ internal static class ServicesDiExtension
         services.AddScoped<ISubmitSpeechGeneration, SubmitSpeechGeneration>();
         services.AddScoped<ISpeechGenerationRequests, SpeechGenerationRequests>();
         services.AddSingleton<IArtifactStorage, FileSystemArtifactStorage>();
-        services.AddScoped<IExecuteSpeechGeneration, ExecuteSpeechGeneration>();
-        services.AddSingleton<ISpeechGenerationDispatcher, QueuedSpeechGenerationDispatcher>();
         services.AddScoped<ISpeechGenerationNotifications, SpeechGenerationNotifications>();
 
         services.AddScoped<IMetaDataService, MetaDataService>();
-        services.AddScoped<ITtsServiceFactory, TtsServiceFactory>();
         services.AddScoped<ISmtpClient, SmtpClient>();
         services.AddScoped<IVoiceService, VoiceService>();
         services.AddScoped<IParallelExecutionService, ParallelExecutionService>();
@@ -54,53 +43,17 @@ internal static class ServicesDiExtension
         services.AddSingleton<IFileProcessor, TextFileProcessor>();
         services.AddSingleton<IFileProcessor, PdfProcessor>();
         services.AddSingleton<IFileProcessor, EpubProcessor>();
-        services.AddSingleton<ICancellationRegistry, CancellationRegistry>();
-        services.AddSingleton<IProgressTracker, ProgressTracker>();
-        services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
-        services.AddHostedService<QueuedHostedService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IOwnerContext, HttpOwnerContext>();
 
-        RegisterServicesBasedOnTestMode(services, configuration);
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddTtsProviders(configuration);
+        services.AddSingleton<SpeechJobConnections>();
+        services.AddHostedService<SpeechJobStatusRelay>();
 
         services.AddRedis(configuration);
 
         return services;
-    }
-
-    private static void RegisterServicesBasedOnTestMode(IServiceCollection services, IConfiguration configuration)
-    {
-        var isTestMode = HostingEnvironment.IsTestMode();
-
-        services.AddScoped<IEmailService, EmailService>();
-
-        services.AddKeyedScoped<ITtsService, ElevenLabsService>(Shared.ElevenLabs.Key);
-        services.AddSingleton(serviceProvider =>
-        {
-            return isTestMode
-                ? FakeElevenLabsClient.Create()
-                : new ElevenLabsClient(configuration[ConfigConstants.ElevenLabsApiKey]);
-        });
-
-        services.AddKeyedScoped<ITtsService, OpenAiService>(Shared.OpenAI.Key);
-        services.AddSingleton(serviceProvider =>
-        {
-            return isTestMode
-                ? FakeOpenAIClient.Create()
-                : new OpenAIClient(configuration[ConfigConstants.OpenAiApiKey]);
-        });
-
-        services.AddKeyedScoped<ITtsService>(Shared.Narakeet.Key,
-            (sp, _) => sp.GetRequiredService<NarakeetService>());
-        services.AddHttpClient<NarakeetService>((provider, client) =>
-        {
-            var options = provider.GetRequiredService<IOptions<NarakeetConfig>>().Value;
-
-            client.BaseAddress = new Uri(options.ApiUrl);
-            client.DefaultRequestHeaders.Add("x-api-key", options.ApiKey);
-        })
-            .ConfigurePrimaryHttpMessageHandler(() =>
-                isTestMode ? new FakeNarakeetHandler() : new HttpClientHandler());
     }
 }

@@ -1,4 +1,4 @@
-# ./start-test-env.ps1
+# .\scripts\start-test-env.ps1
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 

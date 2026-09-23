@@ -1,0 +1,11 @@
+*Test*/
+TextToSpeech.Web
+TextToSpeech.Api
+*/bin
+*/obj
+.git*
+docker*
+*.nupkg
+.vs
+*.md
+.env*

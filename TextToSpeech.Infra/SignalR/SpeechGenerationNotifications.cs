@@ -8,9 +8,12 @@ namespace TextToSpeech.Infra.SignalR;
 
 public sealed class SpeechGenerationNotifications(
     IHubContext<AudioHub> hubContext,
+    SpeechJobConnections connections,
     ILogger<SpeechGenerationNotifications> logger) : ISpeechGenerationNotifications
 {
-    private const int StatusUpdateDelayMs = 200; // todo not stable
+    internal const int StatusUpdateDelayMs = 200; // todo not stable
+
+    public void Refresh(string ownerId) => connections.Refresh(ownerId);
 
     /// <summary>
     /// Notify clients about the status update.

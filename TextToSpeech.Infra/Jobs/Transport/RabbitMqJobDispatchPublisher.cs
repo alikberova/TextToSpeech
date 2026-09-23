@@ -9,6 +9,7 @@ namespace TextToSpeech.Infra.Jobs.Transport;
 public sealed class RabbitMqJobDispatchPublisher(IOptions<RabbitMqConfig> options)
     : IJobDispatchPublisher, IAsyncDisposable
 {
+    private const string ConnectionName = "api";
     private const string ContentType = "application/json";
     private readonly SemaphoreSlim _channelLock = new(1, 1);
     private IConnection? _connection;
@@ -57,28 +58,14 @@ public sealed class RabbitMqJobDispatchPublisher(IOptions<RabbitMqConfig> option
 
         await CloseConnectionAsync();
 
-        var connection = options.Value.RabbitMqConnection;
-        var factory = new ConnectionFactory
-        {
-            HostName = connection.HostName,
-            Port = connection.Port,
-            UserName = connection.UserName,
-            Password = connection.Password,
-            VirtualHost = connection.VirtualHost,
-            AutomaticRecoveryEnabled = false
-        };
+        var factory = RabbitMqTopology.CreateConnectionFactory(options.Value, ConnectionName);
 
         _connection = await factory.CreateConnectionAsync(cancellationToken);
         _channel = await _connection.CreateChannelAsync(
             new CreateChannelOptions(publisherConfirmationsEnabled: true, publisherConfirmationTrackingEnabled: true),
             cancellationToken);
 
-        await _channel.ExchangeDeclareAsync(options.Value.Exchange, ExchangeType.Direct, durable: true,
-            autoDelete: false, cancellationToken: cancellationToken);
-        await _channel.QueueDeclareAsync(options.Value.Queue, durable: true, exclusive: false,
-            autoDelete: false, cancellationToken: cancellationToken);
-        await _channel.QueueBindAsync(options.Value.Queue, options.Value.Exchange, options.Value.RoutingKey,
-            cancellationToken: cancellationToken);
+        await RabbitMqTopology.DeclareAsync(_channel, options.Value, cancellationToken);
 
         return _channel;
     }
@@ -112,3 +99,4 @@ public sealed class RabbitMqJobDispatchPublisher(IOptions<RabbitMqConfig> option
         _channelLock.Dispose();
     }
 }
+

@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
-using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Jobs;
 
@@ -9,7 +8,7 @@ namespace TextToSpeech.Infra.SignalR;
 
 [Authorize]
 public sealed class AudioHub(
-    ICancellationRegistry cancellationRegistry,
+    SpeechJobConnections connections,
     ISpeechGenerationRequests requests,
     IBackgroundJobs jobs) : Hub
 {
@@ -20,9 +19,9 @@ public sealed class AudioHub(
         {
             var jobId = await requests.GetJobIdAsync(audioFileId, ownerId, Context.ConnectionAborted);
 
-            if (jobId.HasValue && await jobs.RequestCancellationAsync(jobId.Value, ownerId, Context.ConnectionAborted))
+            if (jobId.HasValue)
             {
-                await cancellationRegistry.TryCancelTask(audioFileId, ownerId);
+                await jobs.RequestCancellationAsync(jobId.Value, ownerId, Context.ConnectionAborted);
             }
         }
     }
@@ -38,12 +37,15 @@ public sealed class AudioHub(
         }
 
         await Groups.AddToGroupAsync(Context.ConnectionId, ownerId);
+        connections.Add(Context.ConnectionId, ownerId);
 
         await base.OnConnectedAsync();
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
+        connections.Remove(Context.ConnectionId);
+
         var ownerId = GetOwnerId();
 
         if (ownerId is not null)

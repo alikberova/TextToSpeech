@@ -18,9 +18,11 @@ using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.SignalR;
 using static TextToSpeech.Infra.Config.ConfigConstants;
 
+HostingEnvironment.EnsureAspNetCoreEnvironment();
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.SetConfig();
+builder.Configuration.Validate();
 
 ConfigureLogging(builder);
 

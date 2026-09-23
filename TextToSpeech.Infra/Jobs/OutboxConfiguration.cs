@@ -10,16 +10,24 @@ public static class OutboxConfiguration
 {
     public static IServiceCollection AddOutboxPublisher(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddRabbitMqConfiguration(configuration);
+        services.AddSingleton<IJobDispatchPublisher, RabbitMqJobDispatchPublisher>();
+        services.AddScoped<OutboxPublisher>();
+        services.AddHostedService<OutboxPublisherService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddRabbitMqConfiguration(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
         var rabbitMqConfig = configuration.GetSection(SectionNames.RabbitMqConfig).Get<RabbitMqConfig>()
             ?? new RabbitMqConfig();
 
         ValidateRabbitMqConfig(rabbitMqConfig);
 
         services.Configure<RabbitMqConfig>(configuration.GetSection(SectionNames.RabbitMqConfig));
-
-        services.AddSingleton<IJobDispatchPublisher, RabbitMqJobDispatchPublisher>();
-        services.AddScoped<OutboxPublisher>();
-        services.AddHostedService<OutboxPublisherService>();
 
         return services;
     }

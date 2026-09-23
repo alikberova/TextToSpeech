@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TextToSpeech.Api\TextToSpeech.Api.csproj" />
+    <ProjectReference Include="..\TextToSpeech.Worker\TextToSpeech.Worker.csproj" />
   </ItemGroup>
 
 </Project>

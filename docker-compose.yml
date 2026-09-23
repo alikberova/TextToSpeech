@@ -36,6 +36,33 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  worker:
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    image: alikberova/texttospeech.worker:${IMAGE_TAG_VERSION}
+    container_name: worker
+    env_file: ${OVERRIDE_ENV_FILE:-.env}
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      IsTestMode: ${IsTestMode}
+      AppDataPath: /app/data
+      RabbitMq__RabbitMqConnection__HostName: rabbitmq
+      RabbitMq__RabbitMqConnection__Port: 5672
+      RabbitMq__RabbitMqConnection__UserName: ${RABBITMQ_USER}
+      RabbitMq__RabbitMqConnection__Password: ${RABBITMQ_PASSWORD}
+      RabbitMq__RabbitMqConnection__VirtualHost: /
+    volumes:
+      - artifacts-data:/app/data
+    networks:
+      - proxy_elk
+    depends_on:
+      api:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
   web:
     build:
       context: TextToSpeech.Web
