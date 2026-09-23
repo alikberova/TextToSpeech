@@ -38,7 +38,7 @@ jobs:
         OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
         ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+        RABBITMQ_CONNECTION_PASSWORD: ${{ secrets.RABBITMQ__RABBITMQCONNECTION__PASSWORD }}
         EMAIL_FROM: ${{ secrets.EMAILCONFIG__EMAILFROM }}
         EMAIL_PASS: ${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}
         EMAIL_TO: ${{ secrets.EMAILCONFIG__EMAILTO }}
@@ -56,7 +56,21 @@ jobs:
         echo "POSTGRES_USER=${{ vars.POSTGRES_USER }}" >> .env
         echo "POSTGRES_DB=${{ vars.POSTGRES_DB }}" >> .env
         echo "POSTGRES_EXPOSED_PORT=${{ vars.POSTGRES_EXPOSED_PORT }}" >> .env
-        echo "RABBITMQ_USER=${{ vars.RABBITMQ_USER }}" >> .env
+        echo "RabbitMq__RabbitMqConnection__HostName=${{ vars.RABBITMQ__RABBITMQCONNECTION__HOSTNAME }}" >> .env
+        echo "RabbitMq__RabbitMqConnection__Port=${{ vars.RABBITMQ__RABBITMQCONNECTION__PORT }}" >> .env
+        echo "RabbitMq__RabbitMqConnection__UserName=${{ vars.RABBITMQ__RABBITMQCONNECTION__USERNAME }}" >> .env
+        echo "RabbitMq__RabbitMqConnection__Password=$RABBITMQ_CONNECTION_PASSWORD" >> .env
+        echo "RabbitMq__RabbitMqConnection__VirtualHost=${{ vars.RABBITMQ__RABBITMQCONNECTION__VIRTUALHOST }}" >> .env
+        echo "RabbitMq__Exchange=${{ vars.RABBITMQ__EXCHANGE }}" >> .env
+        echo "RabbitMq__Queue=${{ vars.RABBITMQ__QUEUE }}" >> .env
+        echo "RabbitMq__RoutingKey=${{ vars.RABBITMQ__ROUTINGKEY }}" >> .env
+        echo "RabbitMq__PublishTimeoutSeconds=${{ vars.RABBITMQ__PUBLISHTIMEOUTSECONDS }}" >> .env
+        echo "RabbitMq__PollIntervalSeconds=${{ vars.RABBITMQ__POLLINTERVALSECONDS }}" >> .env
+        echo "RabbitMq__RetryDelaySeconds=${{ vars.RABBITMQ__RETRYDELAYSECONDS }}" >> .env
+        echo "Worker__Concurrency=${{ vars.WORKER__CONCURRENCY }}" >> .env
+        echo "Worker__LeaseSeconds=${{ vars.WORKER__LEASESECONDS }}" >> .env
+        echo "Worker__HeartbeatSeconds=${{ vars.WORKER__HEARTBEATSECONDS }}" >> .env
+        echo "Worker__RecoveryIntervalSeconds=${{ vars.WORKER__RECOVERYINTERVALSECONDS }}" >> .env
         echo "ELASTICSEARCHCONFIG__URL=${{ vars.ELASTICSEARCHCONFIG__URL }}" >> .env
         echo "JwtConfig__Issuer=${{ vars.JWTCONFIG__ISSUER }}" >> .env
         echo "JwtConfig__Audience=${{ vars.JWTCONFIG__AUDIENCE }}" >> .env
@@ -68,7 +82,6 @@ jobs:
         echo "OPENAI_API_KEY=$OPENAI_KEY" >> .env
         echo "ELEVENLABS_API_KEY=$ELEVENLABS_API_KEY" >> .env
         echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
-        echo "RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD" >> .env
         echo "EMAILCONFIG__EMAILFROM=$EMAIL_FROM" >> .env
         echo "EMAILCONFIG__EMAILFROMPASSWORD=$EMAIL_PASS" >> .env
         echo "EMAILCONFIG__EMAILTO=$EMAIL_TO" >> .env

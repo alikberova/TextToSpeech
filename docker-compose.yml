@@ -16,11 +16,6 @@ services:
       IsTestMode: ${IsTestMode}
       ASPNETCORE_URLS: "http://+:80"
       AppDataPath: /app/data
-      RabbitMq__RabbitMqConnection__HostName: rabbitmq
-      RabbitMq__RabbitMqConnection__Port: 5672
-      RabbitMq__RabbitMqConnection__UserName: ${RABBITMQ_USER}
-      RabbitMq__RabbitMqConnection__Password: ${RABBITMQ_PASSWORD}
-      RabbitMq__RabbitMqConnection__VirtualHost: /
     volumes:
       - artifacts-data:/app/data
     container_name: api
@@ -47,11 +42,6 @@ services:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       IsTestMode: ${IsTestMode}
       AppDataPath: /app/data
-      RabbitMq__RabbitMqConnection__HostName: rabbitmq
-      RabbitMq__RabbitMqConnection__Port: 5672
-      RabbitMq__RabbitMqConnection__UserName: ${RABBITMQ_USER}
-      RabbitMq__RabbitMqConnection__Password: ${RABBITMQ_PASSWORD}
-      RabbitMq__RabbitMqConnection__VirtualHost: /
     volumes:
       - artifacts-data:/app/data
     networks:
@@ -89,8 +79,8 @@ services:
     image: rabbitmq:4-management-alpine
     hostname: rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_USER: ${RabbitMq__RabbitMqConnection__UserName}
+      RABBITMQ_DEFAULT_PASS: ${RabbitMq__RabbitMqConnection__Password}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     ports:
