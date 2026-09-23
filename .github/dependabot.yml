@@ -10,7 +10,6 @@ updates:
     schedule:
       interval: "cron"
       cronjob: "0 9 * * mon%3"
-      timezone: "Europe/Warsaw"
     target-branch: "dev"
     versioning-strategy: increase
     groups:
@@ -79,7 +78,6 @@ updates:
     schedule:
       interval: "cron"
       cronjob: "0 9 * * mon%3"
-      timezone: "Europe/Warsaw"
     target-branch: "dev"
     ignore:
       - dependency-name: "*"
@@ -92,7 +90,6 @@ updates:
     schedule:
       interval: "cron"
       cronjob: "0 9 * * mon%3"
-      timezone: "Europe/Warsaw"
     target-branch: "dev"
     ignore:
       - dependency-name: "*"
@@ -103,7 +100,6 @@ updates:
     schedule:
       interval: "cron"
       cronjob: "0 9 * * mon%3"
-      timezone: "Europe/Warsaw"
     target-branch: "dev"
     ignore:
       - dependency-name: "*"
@@ -114,7 +110,6 @@ updates:
     schedule:
       interval: "cron"
       cronjob: "0 9 * * mon%3"
-      timezone: "Europe/Warsaw"
     target-branch: "dev"
     ignore:
       - dependency-name: "*"
