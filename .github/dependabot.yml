@@ -8,7 +8,9 @@ updates:
   - package-ecosystem: "npm"
     directory: "/TextToSpeech.Web"
     schedule:
-      interval: "weekly"
+      interval: "cron"
+      cronjob: "0 9 * * mon%3"
+      timezone: "Europe/Warsaw"
     target-branch: "dev"
     versioning-strategy: increase
     groups:
@@ -75,7 +77,9 @@ updates:
       - "/TextToSpeech.IntegrationTests"
       - "/TextToSpeech.SeleniumTests"
     schedule:
-      interval: "weekly"
+      interval: "cron"
+      cronjob: "0 9 * * mon%3"
+      timezone: "Europe/Warsaw"
     target-branch: "dev"
     ignore:
       - dependency-name: "*"
@@ -86,7 +90,9 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "cron"
+      cronjob: "0 9 * * mon%3"
+      timezone: "Europe/Warsaw"
     target-branch: "dev"
     ignore:
       - dependency-name: "*"
@@ -95,7 +101,9 @@ updates:
   - package-ecosystem: "docker"
     directory: "/docker"
     schedule:
-      interval: "weekly"
+      interval: "cron"
+      cronjob: "0 9 * * mon%3"
+      timezone: "Europe/Warsaw"
     target-branch: "dev"
     ignore:
       - dependency-name: "*"
@@ -104,7 +112,9 @@ updates:
   - package-ecosystem: "docker-compose"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "cron"
+      cronjob: "0 9 * * mon%3"
+      timezone: "Europe/Warsaw"
     target-branch: "dev"
     ignore:
       - dependency-name: "*"
