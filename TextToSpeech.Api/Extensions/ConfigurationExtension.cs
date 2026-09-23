@@ -7,12 +7,6 @@ public static class ConfigurationExtension
 {
     public static IConfigurationBuilder SetConfig(this IConfigurationManager configurationBuilder)
     {
-        if (string.IsNullOrWhiteSpace(configurationBuilder[ConfigConstants.AppDataPath]))
-        {
-            configurationBuilder[ConfigConstants.AppDataPath] =
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        }
-
         var config = configurationBuilder
             .AddUserSecrets(Assembly.GetExecutingAssembly(), optional: true, reloadOnChange: true)
             .AddEnvironmentVariables();

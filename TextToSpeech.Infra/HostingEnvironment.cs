@@ -1,15 +1,33 @@
-﻿using TextToSpeech.Infra.Config;
+using Microsoft.Extensions.Hosting;
+using TextToSpeech.Infra.Config;
 
 namespace TextToSpeech.Infra;
 
 public static class HostingEnvironment
 {
-    public static string Current { get; private set; } = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
-        ?? throw new Exception("ASPNETCORE_ENVIRONMENT is not set");
+    public const string AspNetCoreEnvironment = "ASPNETCORE_ENVIRONMENT";
+
+    public static string Current => EnsureAspNetCoreEnvironment();
+
+    public static string EnsureAspNetCoreEnvironment()
+    {
+        var environment = Environment.GetEnvironmentVariable(AspNetCoreEnvironment);
+
+        if (!string.IsNullOrWhiteSpace(environment))
+        {
+            return environment;
+        }
+
+        environment = Environments.Production;
+
+        Environment.SetEnvironmentVariable(AspNetCoreEnvironment, environment);
+
+        return environment;
+    }
 
     public static bool IsDevelopment()
     {
-        return Current == "Development";
+        return Current == Environments.Development;
     }
 
     public static bool IsWindows()

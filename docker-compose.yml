@@ -28,6 +28,30 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    image: alikberova/texttospeech.worker:${IMAGE_TAG_VERSION}
+    container_name: worker
+    env_file: ${OVERRIDE_ENV_FILE:-.env}
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      IsTestMode: ${IsTestMode}
+      AppDataPath: /app/data
+    volumes:
+      - artifacts-data:/app/data
+    networks:
+      - proxy_elk
+    depends_on:
+      api:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
 
   web:
     build:
@@ -50,6 +74,26 @@ services:
     depends_on:
       api:
         condition: service_healthy
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RabbitMq__RabbitMqConnection__UserName}
+      RABBITMQ_DEFAULT_PASS: ${RabbitMq__RabbitMqConnection__Password}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
+    networks:
+      - proxy_elk
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
@@ -83,6 +127,7 @@ networks:
     name: elk
 
 volumes:
+  rabbitmq-data:
   artifacts-data:
   redis-data:
   db-data:

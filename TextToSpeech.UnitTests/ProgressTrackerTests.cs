@@ -1,4 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Models;
 using TextToSpeech.Core.Services;
 using Xunit;
@@ -35,16 +37,29 @@ public sealed class ProgressTrackerTests
     }
 
     [Fact]
-    public void InitializeFile_SetsZeroProgressForAllChunks()
+    public void ScopedInstance_DoesNotReusePreviousChunkValues()
     {
-        var tracker = new ProgressTracker();
+        var services = new ServiceCollection();
+
+        services.AddScoped<IProgressTracker, ProgressTracker>();
+
+        using var provider = services.BuildServiceProvider();
         var fileId = Guid.NewGuid();
-        var progress = Mock.Of<IProgress<ProgressReport>>();
+        var callback = Mock.Of<IProgress<ProgressReport>>();
 
-        tracker.InitializeFile(fileId, 2);
+        using (var firstAttempt = provider.CreateScope())
+        {
+            var tracker = firstAttempt.ServiceProvider.GetRequiredService<IProgressTracker>();
 
-        var overall = tracker.UpdateProgress(fileId, progress, 1, 50);
+            tracker.InitializeFile(fileId, 2);
+            tracker.UpdateProgress(fileId, callback, 0, 100);
+        }
 
-        Assert.Equal(25, overall);
+        using var nextAttempt = provider.CreateScope();
+        var nextTracker = nextAttempt.ServiceProvider.GetRequiredService<IProgressTracker>();
+
+        nextTracker.InitializeFile(fileId, 2);
+
+        Assert.Equal(10, nextTracker.UpdateProgress(fileId, callback, 1, 20));
     }
 }

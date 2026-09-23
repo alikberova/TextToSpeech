@@ -92,6 +92,7 @@ jobs:
         if: matrix.test_type == 'Selenium' && failure()
         run: |
           docker logs api || true
+          docker logs worker || true
   
   frontend-tests:
     runs-on: ubuntu-latest
