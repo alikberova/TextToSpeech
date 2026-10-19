@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.10" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.13" />
     <ProjectReference Include="..\TextToSpeech.Core\TextToSpeech.Core.csproj" />
   </ItemGroup>
 
