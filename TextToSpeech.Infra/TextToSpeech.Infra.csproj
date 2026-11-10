@@ -29,7 +29,7 @@
 	<!--version >= 1.1.1 used by EpubSharp. All the next NETCore.App versions are deprecated-->
 	<PackageReference Include="Microsoft.NETCore.App" Version="2.1.30" />
 	<PackageReference Include="MimeKit" Version="4.16.0" />
-	<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="11.0.0" />
   </ItemGroup>
 
   <ItemGroup>
